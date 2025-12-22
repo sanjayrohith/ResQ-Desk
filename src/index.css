@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 215 28% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 215 28% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 28% 25%;
+    --input: 215 28% 17%;
+    --ring: 210 40% 98%;
+
+    --radius: 0.5rem;
+
+    /* Emergency theme colors */
+    --emergency-critical: 0 72% 51%;
+    --emergency-critical-foreground: 0 0% 100%;
+    --emergency-warning: 25 95% 53%;
+    --emergency-warning-foreground: 0 0% 100%;
+    --emergency-success: 142 71% 45%;
+    --emergency-success-foreground: 0 0% 100%;
+    --emergency-busy: 215 14% 45%;
+    --emergency-busy-foreground: 0 0% 100%;
+
+    /* Panel backgrounds */
+    --panel: 222 47% 8%;
+    --panel-foreground: 210 40% 98%;
+    --panel-header: 222 47% 6%;
+
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 215 28% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 28% 25%;
+    --sidebar-ring: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  /* Audio waveform animation */
+  @keyframes waveform {
+    0%, 100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
+  }
+
+  .waveform-bar {
+    @apply bg-emergency-success;
+    animation: waveform 0.8s ease-in-out infinite;
+  }
+
+  .waveform-bar:nth-child(1) { animation-delay: 0s; }
+  .waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+  .waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+  .waveform-bar:nth-child(4) { animation-delay: 0.3s; }
+  .waveform-bar:nth-child(5) { animation-delay: 0.4s; }
+  .waveform-bar:nth-child(6) { animation-delay: 0.5s; }
+  .waveform-bar:nth-child(7) { animation-delay: 0.6s; }
+  .waveform-bar:nth-child(8) { animation-delay: 0.7s; }
+
+  /* Typing cursor animation */
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .typing-cursor::after {
+    content: '|';
+    animation: blink 1s infinite;
+    @apply text-emergency-success ml-0.5;
+  }
+
+  /* Pulse animation for critical items */
+  @keyframes critical-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .critical-pulse {
+    animation: critical-pulse 2s ease-in-out infinite;
+  }
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M50 5 L90 20 L90 45 C90 70 70 90 50 95 C30 90 10 70 10 45 L10 20 Z" fill="url(#shieldGrad)" stroke="#b91c1c" stroke-width="2"/>
+  <!-- Cross symbol -->
+  <rect x="42" y="25" width="16" height="50" rx="3" fill="white"/>
+  <rect x="25" y="42" width="50" height="16" rx="3" fill="white"/>
+</svg>
