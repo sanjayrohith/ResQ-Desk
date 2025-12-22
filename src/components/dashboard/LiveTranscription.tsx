@@ -1,139 +1,79 @@
-import { useState, useEffect, useRef } from "react";
-import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
-import { FileText, Mic, MicOff, AlertCircle } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { FileText, Mic, MicOff, AlertCircle, Clock } from "lucide-react";
 import "regenerator-runtime/runtime";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
-interface LiveTranscriptionProps {
-  onLineComplete: (fullTranscript: string) => void;
-}
-
-// Reuse your existing keywords logic
-const CRITICAL_KEYWORDS = ["bleeding", "trapped", "unconscious", "dying", "emergency"];
-const WARNING_KEYWORDS = ["baby", "pregnant", "elderly", "child", "disabled"];
-
-function highlightKeywords(text: string) {
-  const words = text.split(" ");
-  return words.map((word, i) => {
-    const cleanWord = word.toLowerCase().replace(/[.,!?]/g, "");
-    if (CRITICAL_KEYWORDS.some(kw => cleanWord.includes(kw))) {
-      return <span key={i} className="px-1 mx-0.5 rounded bg-emergency-critical/30 text-emergency-critical font-semibold">{word}</span>;
-    }
-    if (WARNING_KEYWORDS.some(kw => cleanWord.includes(kw))) {
-      return <span key={i} className="px-1 mx-0.5 rounded bg-emergency-warning/30 text-emergency-warning font-semibold">{word}</span>;
-    }
-    return <span key={i}>{word} </span>;
-  });
-}
-
-export function LiveTranscription({ onLineComplete }: LiveTranscriptionProps) {
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
-
-  const [history, setHistory] = useState<string[]>([]);
+export function LiveTranscription({ onLineComplete }: { onLineComplete: (t: string) => void }) {
+  const { transcript, listening, resetTranscript } = useSpeechRecognition();
+  const [history, setHistory] = useState<{ text: string; time: string }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // --- THE LOGIC: DETECT SILENCE & SEND ---
   useEffect(() => {
-    // If there is no text, do nothing
     if (!transcript) return;
-
-    // Set a timer: If user stops talking for 1.2 seconds, we assume sentence is done
     const timer = setTimeout(() => {
-      // 1. Add to local history for display
-      setHistory((prev) => [...prev, transcript]);
-      
-      // 2. Send to Parent -> AWS Bedrock
+      setHistory((prev) => [...prev, { text: transcript, time: new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' }) }]);
       onLineComplete(transcript);
-      
-      // 3. Reset the current buffer for the next sentence
       resetTranscript();
-    }, 1200);
-
+    }, 1500);
     return () => clearTimeout(timer);
-  }, [transcript, onLineComplete, resetTranscript]);
-
-  // Auto-scroll to bottom
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [history, transcript]);
-
-  // Fallback for unsupported browsers
-  if (!browserSupportsSpeechRecognition) {
-    return <div className="p-4 text-emergency-critical">Browser doesn't support speech recognition. Use Chrome.</div>;
-  }
+  }, [transcript]);
 
   return (
-    <div className="flex flex-col h-100 p-5 bg-panel rounded-xl border border-border shadow-lg">
+    <div className="flex flex-col h-full bg-[#0B0F1A] rounded-xl border border-white/5 overflow-hidden shadow-2xl">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emergency-success/20">
-          <FileText className="w-4 h-4 text-emergency-success" />
+      <div className="p-4 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4 text-blue-400" />
+          <span className="text-xs font-black text-slate-300 uppercase tracking-widest">Real-Time Intel Feed</span>
         </div>
-        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
-          Live Transcription
-        </h2>
-        
-        {/* Mic Status Indicator */}
-        <div className={`ml-auto flex items-center gap-2 px-2 py-1 rounded text-xs border ${listening ? "bg-emergency-critical/20 border-emergency-critical/50 text-emergency-critical animate-pulse" : "bg-secondary border-border text-muted-foreground"}`}>
+        <div className={`flex items-center gap-2 px-2 py-1 rounded text-[9px] font-black border transition-all ${listening ? "bg-red-500/10 border-red-500/40 text-red-500 animate-pulse" : "bg-white/5 border-white/10 text-slate-500"}`}>
           {listening ? <Mic className="w-3 h-3" /> : <MicOff className="w-3 h-3" />}
-          {listening ? "LISTENING" : "MUTED"}
+          {listening ? "RECORDING" : "IDLE"}
         </div>
       </div>
 
-      {/* Transcript Area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 pr-2 mb-5 panel-scroll">
-        {/* 1. Show History (Past Sentences) */}
-        {history.map((line, i) => (
-          <div key={i} className="text-sm p-3 bg-secondary/40 rounded-lg border border-border">
-            <span className="text-muted-foreground font-semibold">Log: </span>
-            <span className="text-foreground">{highlightKeywords(line)}</span>
+      {/* Transcript Log */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 font-mono scrollbar-hide">
+        {history.map((entry, i) => (
+          <div key={i} className="flex gap-3 group animate-in fade-in slide-in-from-left-2">
+            <span className="text-[10px] text-slate-600 mt-1 font-bold">{entry.time}</span>
+            <div className="flex-1 p-3 rounded-lg bg-white/[0.03] border border-white/5 text-sm text-slate-300 leading-relaxed group-hover:border-blue-500/20 transition-colors">
+              {entry.text}
+            </div>
           </div>
         ))}
 
-        {/* 2. Show Current Live Text (What you are saying RIGHT NOW) */}
+        {/* Live Buffer */}
         {transcript && (
-          <div className="text-sm p-3 bg-emergency-warning/10 rounded-lg border border-emergency-warning/30">
-            <span className="text-emergency-warning font-semibold">Live: </span>
-            <span className="text-foreground italic typing-cursor">
-              {highlightKeywords(transcript)}
-            </span>
+          <div className="flex gap-3">
+             <span className="text-[10px] text-blue-500 mt-1 animate-pulse font-bold">LIVE</span>
+             <div className="flex-1 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20 text-sm text-blue-100 italic">
+               {transcript}<span className="inline-block w-2 h-4 bg-blue-500 ml-1 animate-ping" />
+             </div>
           </div>
         )}
-        
+
         {history.length === 0 && !transcript && (
-          <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
-            <AlertCircle className="w-10 h-10 mb-3" />
-            <span className="text-sm font-medium">Waiting for audio...</span>
+          <div className="h-full flex flex-col items-center justify-center opacity-20 py-20">
+            <AlertCircle className="w-12 h-12 mb-4" />
+            <p className="text-xs font-black uppercase tracking-widest text-center">System Ready<br/>Waiting for Audio Input</p>
           </div>
         )}
       </div>
 
-      {/* Manual Controls */}
-      <div className="flex gap-2 mt-auto">
+      {/* Action Footer */}
+      <div className="p-4 border-t border-white/5 bg-black/40 grid grid-cols-2 gap-2">
         <button
-          onClick={() => SpeechRecognition.startListening({ continuous: true, language: 'en-IN' })}
-          className={`flex-1 py-2.5 text-xs font-bold rounded-lg uppercase transition-colors shadow-sm ${listening ? 'bg-secondary text-muted-foreground cursor-not-allowed' : 'bg-emergency-success hover:bg-emerald-600 text-white'}`}
-          disabled={listening}
+          onClick={() => SpeechRecognition.startListening({ continuous: true })}
+          className={`py-2 rounded font-black text-[10px] uppercase tracking-tighter transition-all ${listening ? 'bg-slate-800 text-slate-500' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]'}`}
         >
-          Start Mic
+          Initialize Mic
         </button>
         <button
           onClick={SpeechRecognition.stopListening}
-          className="flex-1 py-2.5 text-xs font-bold bg-secondary hover:bg-secondary/80 text-foreground rounded-lg uppercase border border-border shadow-sm"
+          className="py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded font-black text-[10px] uppercase tracking-tighter text-slate-300"
         >
-          Stop
-        </button>
-        <button
-          onClick={() => { setHistory([]); resetTranscript(); }}
-          className="px-4 py-2.5 text-xs font-bold bg-secondary hover:bg-destructive/20 hover:text-destructive text-muted-foreground rounded-lg uppercase border border-border shadow-sm"
-        >
-          Clear
+          Secure Line
         </button>
       </div>
     </div>

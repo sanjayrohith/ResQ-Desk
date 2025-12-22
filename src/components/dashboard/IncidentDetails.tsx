@@ -1,15 +1,6 @@
-import { ClipboardList, Sparkles, MapPin, AlertCircle, Users, Flag } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ClipboardList, MapPin, AlertCircle, Users, Flag, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge"; // Assuming you have shadcn badge
 
-// Export this interface so the parent knows what to send
 export interface IncidentData {
   location: string;
   emergencyType: string;
@@ -20,125 +11,98 @@ export interface IncidentData {
   flags: string[];
 }
 
-interface IncidentDetailsProps {
-  data: IncidentData; // Receive data as Prop
-}
-
-export function IncidentDetails({ data }: IncidentDetailsProps) {
-  
-  // NOTE: I removed the internal useState. We rely on props now.
-
-  const severityColors = {
-    critical: "bg-emergency-critical text-emergency-critical-foreground",
-    high: "bg-emergency-warning text-emergency-warning-foreground",
-    medium: "bg-yellow-600 text-white",
-    low: "bg-emergency-success text-emergency-success-foreground",
-    normal: "bg-secondary text-muted-foreground" // Added default
+export function IncidentDetails({ data }: { data: IncidentData }) {
+  const severityStyles = {
+    critical: "border-red-500/50 bg-red-500/10 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.1)]",
+    high: "border-orange-500/50 bg-orange-500/10 text-orange-400",
+    medium: "border-yellow-500/50 bg-yellow-500/10 text-yellow-400",
+    low: "border-green-500/50 bg-green-500/10 text-green-400",
+    normal: "border-slate-700 bg-slate-800/40 text-slate-400"
   };
 
+  const currentStyle = severityStyles[data.severity as keyof typeof severityStyles] || severityStyles.normal;
+
   return (
-    <div className="flex flex-col h-full p-6 bg-panel rounded-xl border border-border shadow-lg">
-      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emergency-success/20">
-          <ClipboardList className="w-4 h-4 text-emergency-success" />
+    <div className="flex flex-col h-full p-5 bg-[#0B0F1A] rounded-xl border border-white/5 shadow-2xl">
+      {/* Header with Pulse for 'Live' effect */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-blue-500/10">
+            <ClipboardList className="w-5 h-5 text-blue-400" />
+          </div>
+          <div>
+            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Active Incident</h2>
+            <p className="text-sm font-semibold text-white uppercase tracking-tight">{data.emergencyType || "Awaiting Classification..."}</p>
+          </div>
         </div>
-        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
-          Incident Details
-        </h2>
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/20">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-[10px] font-bold text-red-500 uppercase">Live</span>
+        </div>
       </div>
 
-      <div className="grid gap-5 flex-1 overflow-y-auto pb-2">
-        {/* Location - Now Read Only/Controlled */}
-        <div className="space-y-2">
-          <Label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            <MapPin className="w-3.5 h-3.5" />
-            Location
-          </Label>
-          <Input
-            value={data.location}
-            readOnly // Make it read-only for the demo effect
-            placeholder="Waiting for audio..."
-            className="bg-secondary/60 border-border text-foreground h-10"
-          />
+      <div className="space-y-6 flex-1">
+        {/* Location - Hero Style */}
+        <div className="p-4 rounded-lg bg-white/5 border border-white/10 group hover:border-blue-500/30 transition-colors">
+          <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase mb-2">
+            <MapPin className="w-3 h-3" /> Incident Location
+          </label>
+          <div className="text-lg font-medium text-blue-50 text-balance leading-tight">
+            {data.location || "Triangulating signal..."}
+          </div>
         </div>
 
-        {/* Emergency Type & Severity */}
+        {/* Status Grid */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              <AlertCircle className="w-3.5 h-3.5" />
-              Emergency Type
-            </Label>
-            <Select value={data.emergencyType} disabled>
-              <SelectTrigger className="bg-secondary/60 border-border text-foreground h-10">
-                <SelectValue placeholder="---" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="flood-rescue">Flood Rescue</SelectItem>
-                <SelectItem value="medical">Medical Emergency</SelectItem>
-                {/* ... others ... */}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Severity</Label>
-            <Select value={data.severity} disabled>
-              <SelectTrigger className="bg-secondary/60 border-border text-foreground h-10">
-                <SelectValue placeholder="---" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 p-3 bg-secondary/40 rounded-lg border border-border">
-          <span className="text-xs text-muted-foreground font-semibold uppercase">Current Severity:</span>
-          <span className={`px-3 py-1 text-xs font-bold uppercase rounded-md ${severityColors[data.severity as keyof typeof severityColors] || severityColors.normal}`}>
-            {data.severity || "---"}
-          </span>
-        </div>
-
-        {/* Victims */}
-        <div className="space-y-2">
-          <Label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            <Users className="w-3.5 h-3.5" />
-            Victims
-          </Label>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-2">
-              <span className="text-xs text-muted-foreground font-medium">Adults</span>
-              <Input value={data.adults} readOnly className="bg-secondary/60 border-border text-foreground text-center h-10 font-semibold" />
+          <div className={`p-4 rounded-lg border transition-all duration-500 ${currentStyle}`}>
+            <label className="text-[10px] font-black uppercase opacity-60 mb-1 block">Priority Level</label>
+            <div className="text-xl font-black uppercase italic tracking-tighter">
+              {data.severity || "Pending"}
             </div>
-            <div className="space-y-2">
-              <span className="text-xs text-muted-foreground font-medium">Children</span>
-              <Input value={data.children} readOnly className="bg-secondary/60 border-border text-foreground text-center h-10 font-semibold" />
-            </div>
-            <div className="space-y-2">
-              <span className="text-xs text-muted-foreground font-medium">Elderly</span>
-              <Input value={data.elderly} readOnly className="bg-secondary/60 border-border text-foreground text-center h-10 font-semibold" />
+          </div>
+          
+          <div className="p-4 rounded-lg border border-white/10 bg-white/5">
+            <label className="text-[10px] font-black text-slate-500 uppercase mb-1 block">Time Elapsed</label>
+            <div className="flex items-center gap-2 text-xl font-mono text-white">
+              <Clock className="w-4 h-4 text-blue-400" /> 04:12
             </div>
           </div>
         </div>
 
-        {/* Flags */}
-        <div className="space-y-2">
-          <Label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            <Flag className="w-3.5 h-3.5" />
-            Special Flags
-          </Label>
-          <div className="flex flex-wrap gap-2 min-h-[40px] p-3 bg-secondary/40 rounded-lg border border-border">
-            {data.flags.length === 0 && <span className="text-xs text-muted-foreground italic">None detected</span>}
-            {data.flags.map((flag, i) => (
-              <span key={i} className="px-3 py-1.5 text-xs font-semibold bg-emergency-warning/20 text-emergency-warning rounded-md border border-emergency-warning/30">
-                {flag}
-              </span>
+        {/* Victims - Visual Counters */}
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase">
+            <Users className="w-3 h-3" /> Victim Registry
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { label: "Adults", val: data.adults },
+              { label: "Children", val: data.children },
+              { label: "Elderly", val: data.elderly }
+            ].map((v) => (
+              <div key={v.label} className="bg-white/5 rounded-lg p-3 text-center border border-white/5">
+                <div className="text-xl font-bold text-white">{v.val || "0"}</div>
+                <div className="text-[10px] text-slate-500 uppercase font-bold">{v.label}</div>
+              </div>
             ))}
+          </div>
+        </div>
+
+        {/* Flags - Modern Chips */}
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase">
+            <Flag className="w-3 h-3" /> Tactical Alerts
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {data.flags.length > 0 ? (
+              data.flags.map((f) => (
+                <Badge key={f} variant="outline" className="bg-orange-500/10 text-orange-400 border-orange-500/20 px-3 py-1">
+                  {f}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-xs text-slate-600 italic">No special conditions reported...</span>
+            )}
           </div>
         </div>
       </div>
