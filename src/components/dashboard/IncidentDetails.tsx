@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ClipboardList, Sparkles, MapPin, AlertCircle, Users, Flag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface IncidentData {
+// Export this interface so the parent knows what to send
+export interface IncidentData {
   location: string;
   emergencyType: string;
   severity: string;
@@ -20,31 +20,24 @@ interface IncidentData {
   flags: string[];
 }
 
-export function IncidentDetails() {
-  const [data, setData] = useState<IncidentData>({
-    location: "Perumal Temple, Velachery",
-    emergencyType: "flood-rescue",
-    severity: "critical",
-    adults: "2",
-    children: "0",
-    elderly: "1",
-    flags: ["Elderly", "Mobility Issue"],
-  });
+interface IncidentDetailsProps {
+  data: IncidentData; // Receive data as Prop
+}
 
-  const updateField = (field: keyof IncidentData, value: string) => {
-    setData((prev) => ({ ...prev, [field]: value }));
-  };
+export function IncidentDetails({ data }: IncidentDetailsProps) {
+  
+  // NOTE: I removed the internal useState. We rely on props now.
 
   const severityColors = {
     critical: "bg-emergency-critical text-emergency-critical-foreground",
     high: "bg-emergency-warning text-emergency-warning-foreground",
     medium: "bg-yellow-600 text-white",
     low: "bg-emergency-success text-emergency-success-foreground",
+    normal: "bg-secondary text-muted-foreground" // Added default
   };
 
   return (
     <div className="flex flex-col h-full p-4 bg-panel rounded-lg border border-border">
-      {/* Panel Header */}
       <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border">
         <ClipboardList className="w-4 h-4 text-emergency-success" />
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
@@ -56,9 +49,8 @@ export function IncidentDetails() {
         </div>
       </div>
 
-      {/* Form Fields */}
       <div className="grid gap-4 flex-1">
-        {/* Location */}
+        {/* Location - Now Read Only/Controlled */}
         <div className="space-y-1.5">
           <Label className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <MapPin className="w-3 h-3" />
@@ -66,7 +58,8 @@ export function IncidentDetails() {
           </Label>
           <Input
             value={data.location}
-            onChange={(e) => updateField("location", e.target.value)}
+            readOnly // Make it read-only for the demo effect
+            placeholder="Waiting for audio..."
             className="bg-secondary border-border text-foreground"
           />
         </div>
@@ -78,25 +71,23 @@ export function IncidentDetails() {
               <AlertCircle className="w-3 h-3" />
               Emergency Type
             </Label>
-            <Select value={data.emergencyType} onValueChange={(v) => updateField("emergencyType", v)}>
+            <Select value={data.emergencyType} disabled>
               <SelectTrigger className="bg-secondary border-border text-foreground">
-                <SelectValue />
+                <SelectValue placeholder="---" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="flood-rescue">Flood Rescue</SelectItem>
-                <SelectItem value="fire">Fire Emergency</SelectItem>
                 <SelectItem value="medical">Medical Emergency</SelectItem>
-                <SelectItem value="earthquake">Earthquake</SelectItem>
-                <SelectItem value="accident">Accident</SelectItem>
+                {/* ... others ... */}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Severity</Label>
-            <Select value={data.severity} onValueChange={(v) => updateField("severity", v)}>
+            <Select value={data.severity} disabled>
               <SelectTrigger className="bg-secondary border-border text-foreground">
-                <SelectValue />
+                <SelectValue placeholder="---" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="critical">Critical</SelectItem>
@@ -108,15 +99,14 @@ export function IncidentDetails() {
           </div>
         </div>
 
-        {/* Severity Badge Display */}
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Current Severity:</span>
-          <span className={`px-2 py-0.5 text-xs font-bold uppercase rounded ${severityColors[data.severity as keyof typeof severityColors]}`}>
-            {data.severity}
+          <span className={`px-2 py-0.5 text-xs font-bold uppercase rounded ${severityColors[data.severity as keyof typeof severityColors] || severityColors.normal}`}>
+            {data.severity || "---"}
           </span>
         </div>
 
-        {/* Victims Count */}
+        {/* Victims */}
         <div className="space-y-1.5">
           <Label className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Users className="w-3 h-3" />
@@ -125,46 +115,29 @@ export function IncidentDetails() {
           <div className="grid grid-cols-3 gap-2">
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground">Adults</span>
-              <Input
-                type="number"
-                value={data.adults}
-                onChange={(e) => updateField("adults", e.target.value)}
-                className="bg-secondary border-border text-foreground text-center"
-              />
+              <Input value={data.adults} readOnly className="bg-secondary border-border text-foreground text-center" />
             </div>
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground">Children</span>
-              <Input
-                type="number"
-                value={data.children}
-                onChange={(e) => updateField("children", e.target.value)}
-                className="bg-secondary border-border text-foreground text-center"
-              />
+              <Input value={data.children} readOnly className="bg-secondary border-border text-foreground text-center" />
             </div>
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground">Elderly</span>
-              <Input
-                type="number"
-                value={data.elderly}
-                onChange={(e) => updateField("elderly", e.target.value)}
-                className="bg-secondary border-border text-foreground text-center"
-              />
+              <Input value={data.elderly} readOnly className="bg-secondary border-border text-foreground text-center" />
             </div>
           </div>
         </div>
 
-        {/* Special Flags */}
+        {/* Flags */}
         <div className="space-y-1.5">
           <Label className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Flag className="w-3 h-3" />
             Special Flags
           </Label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 min-h-[30px]">
+            {data.flags.length === 0 && <span className="text-xs text-muted-foreground italic">None detected</span>}
             {data.flags.map((flag, i) => (
-              <span
-                key={i}
-                className="px-2 py-1 text-xs bg-emergency-warning/20 text-emergency-warning rounded border border-emergency-warning/30"
-              >
+              <span key={i} className="px-2 py-1 text-xs bg-emergency-warning/20 text-emergency-warning rounded border border-emergency-warning/30">
                 {flag}
               </span>
             ))}
