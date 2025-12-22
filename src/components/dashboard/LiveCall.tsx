@@ -50,34 +50,36 @@ export function LiveCall({ onCallEnd }: LiveCallProps) {
   };
 
   return (
-    <div className="flex flex-col h-full p-4 bg-panel rounded-lg border border-border">
+    <div className="flex flex-col h-full p-5 bg-panel rounded-xl border border-border shadow-lg">
       {/* Panel Header */}
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border">
-        <Phone className="w-4 h-4 text-emergency-success" />
+      <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emergency-success/20">
+          <Phone className="w-4 h-4 text-emergency-success" />
+        </div>
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
           Live Call
         </h2>
       </div>
 
       {/* Call Status */}
-      <div className="flex items-center justify-between mb-4">
-        <div className={`px-3 py-1 rounded text-xs font-bold uppercase ${statusColors[callStatus]} text-emergency-${callStatus === "connected" ? "success" : callStatus === "hold" ? "warning" : "busy"}-foreground`}>
+      <div className="flex items-center justify-between mb-5">
+        <div className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase shadow-sm ${statusColors[callStatus]} text-emergency-${callStatus === "connected" ? "success" : callStatus === "hold" ? "warning" : "busy"}-foreground`}>
           {statusLabels[callStatus]}
         </div>
-        <div className="text-2xl font-mono font-bold text-foreground">
+        <div className="text-3xl font-mono font-bold text-foreground">
           {formatTime(callTime)}
         </div>
       </div>
 
       {/* Language Detection */}
-      <div className="flex items-center gap-2 mb-6 px-3 py-2 bg-secondary rounded">
+      <div className="flex items-center gap-2 mb-5 px-4 py-2.5 bg-secondary/60 rounded-lg border border-border">
         <Globe className="w-4 h-4 text-muted-foreground" />
         <span className="text-sm text-muted-foreground">Detected:</span>
-        <span className="text-sm font-medium text-foreground">Tamil (Auto)</span>
+        <span className="text-sm font-semibold text-foreground">Tamil (Auto)</span>
       </div>
 
       {/* Waveform Visualization */}
-      <div className="flex items-center justify-center gap-1 h-16 mb-6 px-4 bg-secondary rounded">
+      <div className="flex items-center justify-center gap-1.5 h-20 mb-5 px-4 bg-secondary/60 rounded-lg border border-border">
         {callStatus === "connected" && !isMuted ? (
           Array.from({ length: 8 }).map((_, i) => (
             <div
@@ -87,7 +89,7 @@ export function LiveCall({ onCallEnd }: LiveCallProps) {
             />
           ))
         ) : (
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground font-medium">
             {callStatus === "ended" ? "Call Ended" : isMuted ? "Muted" : "On Hold"}
           </span>
         )}
@@ -98,7 +100,7 @@ export function LiveCall({ onCallEnd }: LiveCallProps) {
         <Button
           variant={isMuted ? "destructive" : "secondary"}
           size="sm"
-          className="flex-1"
+          className="flex-1 h-10 font-semibold"
           onClick={handleMute}
           disabled={callStatus === "ended"}
         >
@@ -109,7 +111,7 @@ export function LiveCall({ onCallEnd }: LiveCallProps) {
         <Button
           variant={isOnHold ? "default" : "secondary"}
           size="sm"
-          className="flex-1"
+          className="flex-1 h-10 font-semibold"
           onClick={handleHold}
           disabled={callStatus === "ended"}
         >
@@ -120,7 +122,7 @@ export function LiveCall({ onCallEnd }: LiveCallProps) {
         <Button
           variant="destructive"
           size="sm"
-          className="flex-1"
+          className="flex-1 h-10 font-semibold"
           onClick={handleEndCall}
           disabled={callStatus === "ended"}
         >

@@ -28,14 +28,14 @@ export function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-panel-header border-b border-border">
+    <header className="flex items-center justify-between px-6 py-4 bg-panel-header border-b-2 border-border shadow-md">
       {/* Logo & Title */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-emergency-critical">
-          <Shield className="w-6 h-6 text-emergency-critical-foreground" />
+      <div className="flex items-center gap-4">
+        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emergency-critical to-emergency-critical/80 shadow-lg">
+          <Shield className="w-7 h-7 text-emergency-critical-foreground" />
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             ResQ-Connect
           </h1>
           <p className="text-xs text-muted-foreground">
@@ -45,23 +45,23 @@ export function Header() {
       </div>
 
       {/* Status Indicators */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-secondary/80 border border-border shadow-sm">
           <Phone className="w-4 h-4 text-emergency-success" />
           <span className="text-sm text-muted-foreground">Active Calls:</span>
-          <span className="text-lg font-bold text-foreground">3</span>
+          <span className="text-xl font-bold text-foreground">3</span>
         </div>
 
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emergency-critical/20 border border-emergency-critical/50 critical-pulse">
-          <AlertTriangle className="w-4 h-4 text-emergency-critical" />
-          <span className="text-sm text-emergency-critical">High Priority:</span>
-          <span className="text-lg font-bold text-emergency-critical">1</span>
+        <div className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emergency-critical/20 border-2 border-emergency-critical/50 shadow-md critical-pulse">
+          <AlertTriangle className="w-5 h-5 text-emergency-critical" />
+          <span className="text-sm text-emergency-critical font-semibold">High Priority:</span>
+          <span className="text-xl font-bold text-emergency-critical">1</span>
         </div>
       </div>
 
       {/* Clock */}
       <div className="text-right">
-        <div className="text-2xl font-mono font-bold text-foreground tracking-wider">
+        <div className="text-3xl font-mono font-bold text-foreground tracking-wider">
           {formatTime(time)}
         </div>
         <div className="text-xs text-muted-foreground">{formatDate(time)}</div>

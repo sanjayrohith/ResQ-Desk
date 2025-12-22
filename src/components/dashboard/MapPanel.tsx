@@ -58,17 +58,19 @@ export function MapPanel({ severity = "critical", isDataComplete = true }: MapPa
     : "bg-emergency-success hover:bg-emergency-success/90 text-emergency-success-foreground";
 
   return (
-    <div className="flex flex-col h-full p-4 bg-panel rounded-lg border border-border">
+    <div className="flex flex-col h-full p-6 bg-panel rounded-xl border border-border shadow-lg">
       {/* Panel Header */}
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border">
-        <Map className="w-4 h-4 text-emergency-success" />
+      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emergency-success/20">
+          <Map className="w-4 h-4 text-emergency-success" />
+        </div>
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
           Map & Resource Matching
         </h2>
       </div>
 
       {/* Map Visualization */}
-      <div className="relative flex-1 mb-4 bg-secondary rounded-lg overflow-hidden">
+      <div className="relative flex-1 mb-5 bg-secondary/60 rounded-xl overflow-hidden border border-border shadow-inner">
         <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
           {/* Grid Lines */}
           <defs>
@@ -124,38 +126,40 @@ export function MapPanel({ severity = "critical", isDataComplete = true }: MapPa
         </svg>
 
         {/* Legend */}
-        <div className="absolute bottom-2 left-2 flex gap-3 text-xs">
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-emergency-critical" />
-            <span className="text-muted-foreground">Incident</span>
+        <div className="absolute bottom-3 left-3 flex gap-4 text-xs bg-panel/90 backdrop-blur-sm px-3 py-2 rounded-lg border border-border shadow-lg">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-emergency-critical shadow-sm" />
+            <span className="text-muted-foreground font-medium">Incident</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-emergency-success" />
-            <span className="text-muted-foreground">Available</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-emergency-success shadow-sm" />
+            <span className="text-muted-foreground font-medium">Available</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-emergency-busy" />
-            <span className="text-muted-foreground">Busy</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-emergency-busy shadow-sm" />
+            <span className="text-muted-foreground font-medium">Busy</span>
           </div>
         </div>
       </div>
 
       {/* Resource Suggestion Card */}
-      <div className="p-3 bg-secondary rounded-lg border border-border mb-4">
-        <div className="flex items-center justify-between mb-2">
+      <div className="p-4 bg-secondary/60 rounded-xl border border-border mb-5 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Truck className="w-4 h-4 text-emergency-success" />
-            <span className="font-semibold text-foreground">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emergency-success/20">
+              <Truck className="w-4 h-4 text-emergency-success" />
+            </div>
+            <span className="font-bold text-foreground text-base">
               {selectedUnit.type} {selectedUnit.id}
             </span>
           </div>
           <span
-            className={`px-2 py-0.5 text-xs font-medium rounded ${
+            className={`px-3 py-1 text-xs font-bold rounded-md shadow-sm ${
               selectedUnit.status === "available"
-                ? "bg-emergency-success/20 text-emergency-success"
+                ? "bg-emergency-success/20 text-emergency-success border border-emergency-success/30"
                 : selectedUnit.status === "dispatched"
-                ? "bg-blue-500/20 text-blue-400"
-                : "bg-emergency-busy/20 text-emergency-busy"
+                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                : "bg-emergency-busy/20 text-emergency-busy border border-emergency-busy/30"
             }`}
           >
             {selectedUnit.status.toUpperCase()}
@@ -164,12 +168,12 @@ export function MapPanel({ severity = "critical", isDataComplete = true }: MapPa
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Navigation className="w-3 h-3" />
-            <span>{selectedUnit.distance} km</span>
+            <Navigation className="w-4 h-4" />
+            <span className="font-medium">{selectedUnit.distance} km away</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="w-3 h-3" />
-            <span>ETA: {selectedUnit.eta} mins</span>
+            <Clock className="w-4 h-4" />
+            <span className="font-medium">ETA: {selectedUnit.eta} mins</span>
           </div>
         </div>
       </div>
@@ -177,11 +181,11 @@ export function MapPanel({ severity = "critical", isDataComplete = true }: MapPa
       {/* Dispatch Button */}
       <Button
         size="lg"
-        className={`w-full font-bold text-base ${dispatchButtonClass}`}
+        className={`w-full font-bold text-base h-12 rounded-xl shadow-lg ${dispatchButtonClass}`}
         disabled={!isDataComplete || isDispatched || selectedUnit.status === "busy"}
         onClick={handleDispatch}
       >
-        {isDispatched ? "UNIT DISPATCHED" : "DISPATCH RESCUE UNIT"}
+        {isDispatched ? "✓ UNIT DISPATCHED" : "DISPATCH RESCUE UNIT"}
       </Button>
     </div>
   );

@@ -69,10 +69,12 @@ export function LiveTranscription({ onLineComplete }: LiveTranscriptionProps) {
   }
 
   return (
-    <div className="flex flex-col h-full p-4 bg-panel rounded-lg border border-border">
+    <div className="flex flex-col h-100 p-5 bg-panel rounded-xl border border-border shadow-lg">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border">
-        <FileText className="w-4 h-4 text-emergency-success" />
+      <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emergency-success/20">
+          <FileText className="w-4 h-4 text-emergency-success" />
+        </div>
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
           Live Transcription
         </h2>
@@ -85,10 +87,10 @@ export function LiveTranscription({ onLineComplete }: LiveTranscriptionProps) {
       </div>
 
       {/* Transcript Area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 pr-2 mb-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 pr-2 mb-5 panel-scroll">
         {/* 1. Show History (Past Sentences) */}
         {history.map((line, i) => (
-          <div key={i} className="text-sm">
+          <div key={i} className="text-sm p-3 bg-secondary/40 rounded-lg border border-border">
             <span className="text-muted-foreground font-semibold">Log: </span>
             <span className="text-foreground">{highlightKeywords(line)}</span>
           </div>
@@ -96,7 +98,7 @@ export function LiveTranscription({ onLineComplete }: LiveTranscriptionProps) {
 
         {/* 2. Show Current Live Text (What you are saying RIGHT NOW) */}
         {transcript && (
-          <div className="text-sm">
+          <div className="text-sm p-3 bg-emergency-warning/10 rounded-lg border border-emergency-warning/30">
             <span className="text-emergency-warning font-semibold">Live: </span>
             <span className="text-foreground italic typing-cursor">
               {highlightKeywords(transcript)}
@@ -106,8 +108,8 @@ export function LiveTranscription({ onLineComplete }: LiveTranscriptionProps) {
         
         {history.length === 0 && !transcript && (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
-            <AlertCircle className="w-8 h-8 mb-2" />
-            <span className="text-xs">Waiting for audio...</span>
+            <AlertCircle className="w-10 h-10 mb-3" />
+            <span className="text-sm font-medium">Waiting for audio...</span>
           </div>
         )}
       </div>
@@ -116,20 +118,20 @@ export function LiveTranscription({ onLineComplete }: LiveTranscriptionProps) {
       <div className="flex gap-2 mt-auto">
         <button
           onClick={() => SpeechRecognition.startListening({ continuous: true, language: 'en-IN' })}
-          className={`flex-1 py-2 text-xs font-bold rounded uppercase transition-colors ${listening ? 'bg-secondary text-muted-foreground cursor-not-allowed' : 'bg-emergency-success hover:bg-emerald-600 text-white'}`}
+          className={`flex-1 py-2.5 text-xs font-bold rounded-lg uppercase transition-colors shadow-sm ${listening ? 'bg-secondary text-muted-foreground cursor-not-allowed' : 'bg-emergency-success hover:bg-emerald-600 text-white'}`}
           disabled={listening}
         >
           Start Mic
         </button>
         <button
           onClick={SpeechRecognition.stopListening}
-          className="flex-1 py-2 text-xs font-bold bg-secondary hover:bg-secondary/80 text-foreground rounded uppercase border border-border"
+          className="flex-1 py-2.5 text-xs font-bold bg-secondary hover:bg-secondary/80 text-foreground rounded-lg uppercase border border-border shadow-sm"
         >
           Stop
         </button>
         <button
           onClick={() => { setHistory([]); resetTranscript(); }}
-          className="px-3 py-2 text-xs font-bold bg-secondary hover:bg-destructive/20 hover:text-destructive text-muted-foreground rounded uppercase border border-border"
+          className="px-4 py-2.5 text-xs font-bold bg-secondary hover:bg-destructive/20 hover:text-destructive text-muted-foreground rounded-lg uppercase border border-border shadow-sm"
         >
           Clear
         </button>

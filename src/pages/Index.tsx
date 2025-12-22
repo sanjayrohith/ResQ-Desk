@@ -56,33 +56,37 @@ const Index = () => {
       {/* Header */}
       <Header />
 
-      {/* Main Grid - 3 columns, 2 rows */}
-      <div className="flex-1 grid grid-cols-[320px_1fr] grid-rows-2 gap-3 p-3 min-h-0">
+      {/* Main Dashboard Grid - Professional 3-column layout */}
+      <div className="flex-1 grid grid-cols-12 gap-4 p-4 min-h-0 max-w-[2000px] mx-auto w-full">
         
-        {/* Left Column - Row 1: Live Call */}
-        <div className="row-start-1 col-start-1">
-          <LiveCall />
+        {/* Left Sidebar - Call Controls (3 columns wide) */}
+        <div className="col-span-12 lg:col-span-3 flex flex-col gap-4 min-h-0">
+          {/* Live Call Panel */}
+          <div className="flex-[0.4] min-h-[280px]">
+            <LiveCall />
+          </div>
+
+          {/* Live Transcription Panel */}
+          <div className="flex-1 min-h-[400px]">
+            <LiveTranscription onLineComplete={handleLineComplete} />
+          </div>
         </div>
 
-        {/* Left Column - Row 2: Live Transcription */}
-        <div className="row-start-2 col-start-1">
-          {/* Passes the text to the backend handler */}
-          <LiveTranscription onLineComplete={handleLineComplete} />
+        {/* Middle Section - Incident Details (4 columns wide) */}
+        <div className="col-span-12 lg:col-span-4 flex flex-col min-h-0">
+          <div className="flex-1 min-h-[600px]">
+            <IncidentDetails data={incidentData} />
+          </div>
         </div>
 
-        {/* Right Side - Row 1: Incident Details */}
-        <div className="row-start-1 col-start-2">
-          {/* Displays the data received from Bedrock */}
-          <IncidentDetails data={incidentData} />
-        </div>
-
-        {/* Right Side - Row 2: Map Panel */}
-        <div className="row-start-2 col-start-2">
-          {/* Map reacts to severity changes (e.g., turns red if Critical) */}
-          <MapPanel 
-            severity={incidentData.severity || "normal"} 
-            isDataComplete={!!incidentData.location} 
-          />
+        {/* Right Section - Map & Resources (5 columns wide) */}
+        <div className="col-span-12 lg:col-span-5 flex flex-col min-h-0">
+          <div className="flex-1 min-h-[600px]">
+            <MapPanel 
+              severity={incidentData.severity || "normal"} 
+              isDataComplete={!!incidentData.location} 
+            />
+          </div>
         </div>
       </div>
     </div>
