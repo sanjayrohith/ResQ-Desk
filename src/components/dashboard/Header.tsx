@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { Phone, AlertTriangle, Shield, Signal, Wifi, Activity, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Activity, Zap, Clock } from "lucide-react";
 
 export function Header() {
   const [time, setTime] = useState(new Date());
-  const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -21,82 +19,67 @@ export function Header() {
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+    const year = date.getFullYear();
+    const offset = date.getTimezoneOffset();
+    const offsetHours = Math.abs(Math.floor(offset / 60));
+    const offsetMins = Math.abs(offset % 60);
+    const offsetSign = offset <= 0 ? '+' : '-';
+    const tz = `UTC${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMins.toString().padStart(2, '0')}`;
+    return `${day} ${month} ${year} // ${tz}`;
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-[#0B0F1A]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
-      {/* Left: Brand Identity */}
-      <div className="flex items-center gap-6">
+    <header className="relative flex items-center justify-between px-6 py-3 bg-gradient-to-b from-[#0c1118] to-[#080c12] border-b border-[#1a2835]/60" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), 0 0 60px -20px rgba(0,212,255,0.1)' }}>
+      {/* Left: Brand */}
+      <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 shadow-[0_0_15px_rgba(37,99,235,0.3)]">
-            <Shield className="w-5 h-5 text-white" />
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-[#0B0F1A] rounded-full animate-pulse" />
+          {/* Logo Icon */}
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-cyan-500/40 bg-cyan-500/10" style={{ boxShadow: '0 0 20px rgba(0,212,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+            <svg viewBox="0 0 24 24" className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-xl font-black tracking-tighter text-white uppercase leading-none">
-              ResQ<span className="text-blue-500">Connect</span>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight text-white">
+              RESQ<span className="text-cyan-400">CONNECT</span>
             </h1>
-            <span className="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">
-              Emergency Dispatch OS v2.4
-            </span>
+            <p className="text-[9px] text-slate-500 uppercase tracking-[0.15em] -mt-0.5">
+              Tactical Dispatch System v2.4
+            </p>
           </div>
+        </div>
+      </div>
+
+      {/* Center: System Status */}
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px rgba(16,185,129,0.9), 0 0 20px rgba(16,185,129,0.5), 0 0 40px rgba(16,185,129,0.3)' }} />
+          <span className="text-xs font-medium text-slate-400">SYSTEM ONLINE</span>
         </div>
         
-        {/* Vertical Divider */}
-        <div className="h-8 w-px bg-white/10 hidden md:block" />
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <Zap className="w-3.5 h-3.5 text-cyan-400" />
+          <span>LATENCY: <span className="text-cyan-400">24ms</span></span>
+        </div>
 
-        {/* System Stats (Arch/Polybar style) */}
-        <div className="hidden md:flex items-center gap-4">
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                <Wifi className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="text-emerald-500 font-bold">ONLINE</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                <Activity className="w-3.5 h-3.5" />
-                <span>LAT: 24ms</span>
-            </div>
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <Activity className="w-3.5 h-3.5 text-amber-400" />
+          <span>ACTIVE: <span className="text-amber-400">03</span></span>
         </div>
       </div>
 
-      {/* Center: HUD Counters */}
-      <div className="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
-        <div className="flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
-          <div className="flex items-center gap-2 border-r border-white/10 pr-3">
-            <Phone className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-slate-400 uppercase font-bold">Active</span>
-            <span className="text-sm font-black text-white">03</span>
-          </div>
-          
-          <div className="flex items-center gap-2 pl-1">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-500 animate-[bounce_1s_infinite]" />
-            <span className="text-[10px] text-red-400 uppercase font-bold">Critical</span>
-            <span className="text-sm font-black text-red-500">01</span>
-          </div>
+      {/* Right: Time */}
+      <div className="text-right">
+        <div className="text-2xl font-bold font-mono text-white tracking-wider tabular-nums">
+          {formatTime(time)}
         </div>
-      </div>
-
-      {/* Right: Time & User */}
-      <div className="flex items-center gap-6">
-        <div className="text-right hidden sm:block">
-          <div className="text-2xl font-black font-mono text-white tracking-widest leading-none tabular-nums">
-            {formatTime(time)}
-          </div>
-          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right mt-1">
-            {formatDate(time)}
-          </div>
+        <div className="text-[10px] text-slate-500 tracking-wide">
+          {formatDate(time)}
         </div>
-
-        <div className="h-8 w-px bg-white/10" />
-
-        <Button size="icon" variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/10">
-            <Menu className="w-5 h-5" />
-        </Button>
       </div>
     </header>
   );

@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { Phone, Mic, MicOff, Pause, Play, PhoneOff, Globe, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Mic, PhoneOff, Radio } from "lucide-react";
 
 export function LiveCall({ onCallEnd }: { onCallEnd?: () => void }) {
-  const [callTime, setCallTime] = useState(241); // 04:01
-  const [isMuted, setIsMuted] = useState(false);
-  const [isOnHold, setIsOnHold] = useState(false);
+  const [callTime, setCallTime] = useState(320); // 05:20
+  const [isPTTActive, setIsPTTActive] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCallTime((t) => t + 1), 1000);
@@ -19,65 +17,78 @@ export function LiveCall({ onCallEnd }: { onCallEnd?: () => void }) {
   };
 
   return (
-    <div className="flex flex-col h-full p-5 bg-[#0D1117] rounded-xl border border-white/5 relative overflow-hidden">
-      {/* Background Decor for 'Vibe' */}
-      <div className="absolute top-0 right-0 p-2 opacity-10 font-mono text-[8px] text-blue-400 select-none">
-        FREQ_800Hz // SIGNAL_STABLE // ENCRYPTED
-      </div>
-
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/20">
-          <Phone className="w-4 h-4 text-emerald-400" />
-        </div>
-        <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Secondary Comms Channel</h2>
-      </div>
-
-      <div className="flex flex-col items-center justify-center py-6 mb-4 bg-white/[0.02] rounded-lg border border-white/5">
-        <div className="text-[10px] font-bold text-emerald-500/60 uppercase mb-1 tracking-tighter">Connection Active</div>
-        <div className="text-5xl font-black font-mono text-white tracking-tighter">
-          {formatTime(callTime)}
+    <div className="floating-card floating-card-cyan flex flex-col h-full">
+      {/* Header */}
+      <div className="panel-header">
+        <span className="panel-title text-cyan-400 text-glow-cyan">
+          Comms Channel
+        </span>
+        <div className="flex gap-0.5">
+          <span className="w-1 h-1 rounded-full bg-slate-600" />
+          <span className="w-1 h-1 rounded-full bg-slate-600" />
+          <span className="w-1 h-1 rounded-full bg-slate-600" />
         </div>
       </div>
 
-      <div className="space-y-4">
-        {/* Signal & Language */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded border border-white/5">
-            <Globe className="w-3.5 h-3.5 text-blue-400" />
-            <span className="text-[10px] font-bold text-slate-300 uppercase">Tamil (AUTO)</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded border border-white/5">
-            <Zap className="w-3.5 h-3.5 text-yellow-400" />
-            <span className="text-[10px] font-bold text-slate-300 uppercase">Latency: 24ms</span>
+      {/* Content */}
+      <div className="flex-1 p-4 flex flex-col">
+        {/* Active Channel Display */}
+        <div className="mb-4">
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Active Channel</div>
+          <div className="flex items-center gap-2">
+            <Radio className="w-4 h-4 text-cyan-400" style={{ filter: 'drop-shadow(0 0 4px rgba(0,212,255,0.6))' }} />
+            <span className="text-lg font-bold text-cyan-400 tracking-tight text-glow-cyan">SECURE_01</span>
           </div>
         </div>
 
-        {/* Waveform Visualization - Styled as 'Digital Spectrum' */}
-        <div className="h-24 bg-[#080B10] border border-white/5 rounded-lg flex items-center justify-center gap-1 px-6 group">
-          {[...Array(15)].map((_, i) => (
-            <div
-              key={i}
-              className="w-1 bg-emerald-500/40 rounded-full animate-pulse group-hover:bg-emerald-400 transition-all"
-              style={{ height: `${Math.random() * 80 + 10}%`, animationDelay: `${i * 0.1}s` }}
-            />
-          ))}
+        {/* Call Timer */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div className="text-5xl font-bold font-mono text-white tracking-tight tabular-nums">
+              {formatTime(callTime)}
+            </div>
+            <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Live Feed</div>
+          </div>
         </div>
-      </div>
 
-      {/* Control Buttons */}
-      <div className="flex gap-2 mt-auto pt-4">
-        <Button variant="outline" className="flex-1 bg-white/5 border-white/10 hover:bg-white/10 text-white font-bold text-[10px] uppercase" onClick={() => setIsMuted(!isMuted)}>
-          {isMuted ? <MicOff className="mr-2 w-3.5 h-3.5 text-red-400" /> : <Mic className="mr-2 w-3.5 h-3.5 text-blue-400" />}
-          {isMuted ? "Unmute" : "Mute"}
-        </Button>
-        <Button variant="outline" className="flex-1 bg-white/5 border-white/10 hover:bg-white/10 text-white font-bold text-[10px] uppercase" onClick={() => setIsOnHold(!isOnHold)}>
-          {isOnHold ? <Play className="mr-2 w-3.5 h-3.5 text-emerald-400" /> : <Pause className="mr-2 w-3.5 h-3.5 text-yellow-400" />}
-          Hold
-        </Button>
-        <Button variant="destructive" className="flex-1 font-bold text-[10px] uppercase bg-red-600/80 hover:bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.2)]" onClick={onCallEnd}>
-          <PhoneOff className="mr-2 w-3.5 h-3.5" />
-          End Call
-        </Button>
+        {/* Status Info */}
+        <div className="space-y-2 mb-4 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500 uppercase text-[10px] tracking-wider">Latency</span>
+            <span className="text-cyan-400 font-mono">24ms</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500 uppercase text-[10px] tracking-wider">Language</span>
+            <span className="text-slate-300 px-2 py-0.5 bg-[#1a2332] rounded text-xs">TAMIL (AUTO)</span>
+          </div>
+        </div>
+
+        {/* Control Buttons */}
+        <div className="mt-auto grid grid-cols-2 gap-3">
+          <button
+            onMouseDown={() => setIsPTTActive(true)}
+            onMouseUp={() => setIsPTTActive(false)}
+            onMouseLeave={() => setIsPTTActive(false)}
+            className={`flex items-center justify-center gap-2 py-3 rounded-lg border transition-all ${
+              isPTTActive 
+                ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-400" 
+                : "inner-card text-slate-300 hover:border-cyan-500/30"
+            }`}
+            style={isPTTActive ? { boxShadow: '0 0 20px rgba(0,212,255,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' } : {}}
+          >
+            <Mic className="w-4 h-4" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">PTT</span>
+          </button>
+          
+          <button
+            onClick={onCallEnd}
+            className="flex items-center justify-center gap-2 py-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all"
+            style={{ boxShadow: '0 0 15px rgba(239,68,68,0.15)' }}
+          >
+            <PhoneOff className="w-4 h-4" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">End Call</span>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
-import { ClipboardList, MapPin, AlertCircle, Users, Flag, Clock } from "lucide-react";
-import { Badge } from "@/components/ui/badge"; // Assuming you have shadcn badge
+import { MapPin, Clock, AlertTriangle, Users } from "lucide-react";
 
 export interface IncidentData {
   location: string;
@@ -11,97 +10,138 @@ export interface IncidentData {
   flags: string[];
 }
 
-export function IncidentDetails({ data }: { data: IncidentData }) {
-  const severityStyles = {
-    critical: "border-red-500/50 bg-red-500/10 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.1)]",
-    high: "border-orange-500/50 bg-orange-500/10 text-orange-400",
-    medium: "border-yellow-500/50 bg-yellow-500/10 text-yellow-400",
-    low: "border-green-500/50 bg-green-500/10 text-green-400",
-    normal: "border-slate-700 bg-slate-800/40 text-slate-400"
+interface IncidentDetailsProps {
+  data: IncidentData;
+  isLoading?: boolean;
+}
+
+export function IncidentDetails({ data, isLoading }: IncidentDetailsProps) {
+  const [elapsedTime, setElapsedTime] = useState("00:00:00");
+  
+  // Timer effect
+  useEffect(() => {
+    const startTime = Date.now();
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const hours = Math.floor(elapsed / 3600000);
+      const minutes = Math.floor((elapsed % 3600000) / 60000);
+      const seconds = Math.floor((elapsed % 60000) / 1000);
+      setElapsedTime(
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      );
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const severityConfig = {
+    critical: { color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/30" },
+    high: { color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/30" },
+    medium: { color: "text-yellow-500", bg: "bg-yellow-500/10", border: "border-yellow-500/30" },
+    low: { color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/30" },
+    normal: { color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/30" },
   };
 
-  const currentStyle = severityStyles[data.severity as keyof typeof severityStyles] || severityStyles.normal;
+  const severity = severityConfig[data.severity as keyof typeof severityConfig] || severityConfig.normal;
 
   return (
-    <div className="flex flex-col h-full p-5 bg-[#0B0F1A] rounded-xl border border-white/5 shadow-2xl">
-      {/* Header with Pulse for 'Live' effect */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-blue-500/10">
-            <ClipboardList className="w-5 h-5 text-blue-400" />
-          </div>
-          <div>
-            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Active Incident</h2>
-            <p className="text-sm font-semibold text-white uppercase tracking-tight">{data.emergencyType || "Awaiting Classification..."}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[10px] font-bold text-red-500 uppercase">Live</span>
+    <div className="floating-card floating-card-red flex flex-col h-full">
+      {/* Header */}
+      <div className="panel-header">
+        <span className="panel-title text-red-400 text-glow-red">
+          Active Incident
+        </span>
+        <div className="flex gap-0.5">
+          <span className="w-1 h-1 rounded-full bg-slate-600" />
+          <span className="w-1 h-1 rounded-full bg-slate-600" />
+          <span className="w-1 h-1 rounded-full bg-slate-600" />
         </div>
       </div>
 
-      <div className="space-y-6 flex-1">
-        {/* Location - Hero Style */}
-        <div className="p-4 rounded-lg bg-white/5 border border-white/10 group hover:border-blue-500/30 transition-colors">
-          <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase mb-2">
-            <MapPin className="w-3 h-3" /> Incident Location
-          </label>
-          <div className="text-lg font-medium text-blue-50 text-balance leading-tight">
-            {data.location || "Triangulating signal..."}
+      {/* Content */}
+      <div className="flex-1 p-4 flex flex-col overflow-y-auto scrollbar-tactical">
+        {/* Priority Badge */}
+        <div className="flex items-center gap-2 mb-3">
+          <AlertTriangle className={`w-4 h-4 ${severity.color}`} />
+          <span className={`text-[10px] uppercase tracking-wider ${severity.color}`}>
+            Priority: {data.severity || "Normal"}
+          </span>
+        </div>
+
+        {/* Emergency Type - Main Title */}
+        <h2 className="text-2xl font-bold text-white uppercase tracking-tight mb-6 leading-tight">
+          {data.emergencyType || "Awaiting Classification..."}
+        </h2>
+
+        {/* Location & Time Grid */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* Location */}
+          <div className={`p-3 rounded border ${severity.border} ${severity.bg}`}>
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin className={`w-3.5 h-3.5 ${severity.color}`} />
+              <span className="text-[9px] text-slate-500 uppercase tracking-wider">Location Status</span>
+            </div>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              {data.location || "Triangulating signal..."}
+            </p>
+          </div>
+
+          {/* Elapsed Time */}
+          <div className="inner-card p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="w-3.5 h-3.5 text-cyan-400" style={{ filter: 'drop-shadow(0 0 4px rgba(0,212,255,0.5))' }} />
+              <span className="text-[9px] text-slate-500 uppercase tracking-wider">Elapsed Time</span>
+            </div>
+            <p className="text-2xl font-bold font-mono text-cyan-400 tabular-nums text-glow-cyan">
+              {elapsedTime}
+            </p>
           </div>
         </div>
 
-        {/* Status Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className={`p-4 rounded-lg border transition-all duration-500 ${currentStyle}`}>
-            <label className="text-[10px] font-black uppercase opacity-60 mb-1 block">Priority Level</label>
-            <div className="text-xl font-black uppercase italic tracking-tighter">
-              {data.severity || "Pending"}
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg border border-white/10 bg-white/5">
-            <label className="text-[10px] font-black text-slate-500 uppercase mb-1 block">Time Elapsed</label>
-            <div className="flex items-center gap-2 text-xl font-mono text-white">
-              <Clock className="w-4 h-4 text-blue-400" /> 04:12
-            </div>
-          </div>
-        </div>
-
-        {/* Victims - Visual Counters */}
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase">
-            <Users className="w-3 h-3" /> Victim Registry
-          </label>
+        {/* Victim Registry */}
+        <div className="mb-6">
           <div className="grid grid-cols-3 gap-2">
             {[
-              { label: "Adults", val: data.adults },
-              { label: "Children", val: data.children },
-              { label: "Elderly", val: data.elderly }
-            ].map((v) => (
-              <div key={v.label} className="bg-white/5 rounded-lg p-3 text-center border border-white/5">
-                <div className="text-xl font-bold text-white">{v.val || "0"}</div>
-                <div className="text-[10px] text-slate-500 uppercase font-bold">{v.label}</div>
+              { label: "Adults", value: data.adults, icon: "👤" },
+              { label: "Children", value: data.children, icon: "👶" },
+              { label: "Elderly", value: data.elderly, icon: "👴" },
+            ].map((item) => (
+              <div key={item.label} className="inner-card p-4 text-center">
+                <Users className="w-4 h-4 text-slate-500 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white mb-1">{item.value || "0"}</div>
+                <div className="text-[9px] text-slate-500 uppercase tracking-wider">{item.label}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Flags - Modern Chips */}
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase">
-            <Flag className="w-3 h-3" /> Tactical Alerts
-          </label>
-          <div className="flex flex-wrap gap-2">
+        {/* Tactical Alerts */}
+        <div className="mt-auto">
+          <div className="flex items-center justify-between mb-3 border-b border-[#1a2332] pb-2">
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-amber-500">
+              Tactical Alerts
+            </span>
+            <div className="flex gap-0.5">
+              <span className="w-1 h-1 rounded-full bg-slate-600" />
+              <span className="w-1 h-1 rounded-full bg-slate-600" />
+              <span className="w-1 h-1 rounded-full bg-slate-600" />
+            </div>
+          </div>
+          
+          <div className="p-3 rounded border border-amber-500/20 bg-amber-500/5">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <span className="text-sm font-bold text-amber-500 uppercase">Hazard Warning</span>
+            </div>
             {data.flags.length > 0 ? (
-              data.flags.map((f) => (
-                <Badge key={f} variant="outline" className="bg-orange-500/10 text-orange-400 border-orange-500/20 px-3 py-1">
-                  {f}
-                </Badge>
-              ))
+              <div className="flex flex-wrap gap-2">
+                {data.flags.map((flag, i) => (
+                  <span key={i} className="px-2 py-1 text-xs bg-amber-500/10 text-amber-400 rounded border border-amber-500/20">
+                    {flag}
+                  </span>
+                ))}
+              </div>
             ) : (
-              <span className="text-xs text-slate-600 italic">No special conditions reported...</span>
+              <p className="text-sm text-slate-500">No special conditions reported...</p>
             )}
           </div>
         </div>
@@ -109,3 +149,5 @@ export function IncidentDetails({ data }: { data: IncidentData }) {
     </div>
   );
 }
+
+import { useState, useEffect } from "react";
