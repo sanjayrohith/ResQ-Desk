@@ -43,13 +43,9 @@ export function IncidentDetails({ data }: IncidentDetailsProps) {
         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
           Incident Details
         </h2>
-        <div className="ml-auto flex items-center gap-1 px-2 py-0.5 text-xs bg-purple-500/20 text-purple-400 rounded">
-          <Sparkles className="w-3 h-3" />
-          AI Generated
-        </div>
       </div>
 
-      <div className="grid gap-4 flex-1">
+      <div className="grid gap-4 flex-1 overflow-y-auto pb-2">
         {/* Location - Now Read Only/Controlled */}
         <div className="space-y-1.5">
           <Label className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -112,7 +108,7 @@ export function IncidentDetails({ data }: IncidentDetailsProps) {
             <Users className="w-3 h-3" />
             Victims
           </Label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground">Adults</span>
               <Input value={data.adults} readOnly className="bg-secondary border-border text-foreground text-center" />
