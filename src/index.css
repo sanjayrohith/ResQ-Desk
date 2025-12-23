@@ -5,241 +5,83 @@
 @layer base {
   :root {
     /* --- TACTICAL DISPATCH PALETTE --- */
-    
-    /* Background - Deep void for max contrast */
-    --background: 220 25% 3%;        /* #040608 */
+    --background: 220 25% 3%;
     --foreground: 200 20% 90%;
-
-    /* Cards/Panels - Elevated surface */
-    --card: 220 20% 10%;             /* #121a24 */
+    --card: 220 20% 10%;
     --card-foreground: 200 20% 90%;
-
-    --panel: 220 20% 10%;
-    --panel-foreground: 200 20% 90%;
-    --panel-header: 220 18% 12%;
-
     --popover: 220 20% 10%;
     --popover-foreground: 200 20% 90%;
-
-    /* Borders - Brighter for definition */
-    --border: 200 15% 22%;           /* #2a3a4a */
-    --input: 200 15% 22%;
-    --ring: 185 100% 50%;
-
-    /* Accent - Cyan */
-    --primary: 185 100% 50%;         /* #00d4ff */
+    --primary: 185 100% 50%;
     --primary-foreground: 220 20% 4%;
-    
     --secondary: 200 15% 15%;
     --secondary-foreground: 200 20% 90%;
-
     --muted: 200 15% 15%;
     --muted-foreground: 200 10% 50%;
-
     --accent: 185 100% 50%;
     --accent-foreground: 220 20% 4%;
-
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-
-    /* TACTICAL SETTINGS */
+    --border: 200 15% 22%;
+    --input: 200 15% 22%;
+    --ring: 185 100% 50%;
     --radius: 0.75rem;
-
-    /* STATUS COLORS */
-    --cyan: 185 100% 50%;
-    --coral: 0 85% 65%;
-    --amber: 38 92% 50%;
-    --emerald: 160 84% 39%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  
+  * { @apply border-border; }
   body {
-    @apply text-foreground antialiased;
+    @apply text-foreground antialiased bg-[#050505];
     font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    /* Multi-layer gradient background for depth */
-    background: 
-      radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0, 212, 255, 0.04) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-      radial-gradient(ellipse 100% 100% at 50% 0%, rgba(20, 30, 40, 0.5) 0%, transparent 70%),
-      linear-gradient(180deg, #020304 0%, #040608 50%, #030405 100%);
-    background-attachment: fixed;
-    min-height: 100vh;
   }
 }
 
 @layer components {
-  /* 3D Floating Card - The main effect */
+  /* 3D Floating Glass Card */
   .floating-card {
-    @apply rounded-xl overflow-hidden transition-all duration-300;
-    background: linear-gradient(165deg, 
-      rgba(22, 32, 45, 0.95) 0%, 
-      rgba(13, 21, 30, 0.98) 50%,
-      rgba(10, 16, 24, 1) 100%);
-    border: 1px solid rgba(45, 65, 85, 0.5);
-    box-shadow: 
-      0 2px 4px rgba(0, 0, 0, 0.3),
-      0 8px 16px rgba(0, 0, 0, 0.4),
-      0 16px 32px rgba(0, 0, 0, 0.3),
-      0 32px 64px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    @apply rounded-xl overflow-hidden transition-all duration-300 relative;
+    /* Glass Background */
+    background: linear-gradient(165deg, rgba(22, 32, 45, 0.6) 0%, rgba(10, 16, 24, 0.8) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
-  .floating-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(55, 80, 105, 0.6);
-    box-shadow: 
-      0 4px 8px rgba(0, 0, 0, 0.35),
-      0 12px 24px rgba(0, 0, 0, 0.45),
-      0 24px 48px rgba(0, 0, 0, 0.35),
-      0 48px 96px rgba(0, 0, 0, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-      0 0 60px -20px rgba(0, 212, 255, 0.15);
-  }
-
-  /* Panel with colored glow variants */
-  .floating-card-cyan {
-    box-shadow: 
-      0 2px 4px rgba(0, 0, 0, 0.3),
-      0 8px 16px rgba(0, 0, 0, 0.4),
-      0 16px 32px rgba(0, 0, 0, 0.3),
-      0 0 40px -15px rgba(0, 212, 255, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-
-  .floating-card-red {
-    box-shadow: 
-      0 2px 4px rgba(0, 0, 0, 0.3),
-      0 8px 16px rgba(0, 0, 0, 0.4),
-      0 16px 32px rgba(0, 0, 0, 0.3),
-      0 0 40px -15px rgba(239, 68, 68, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-
-  /* Panel Header with gradient shine */
   .panel-header {
     @apply flex items-center justify-between px-4 py-3;
     background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
-    border-bottom: 1px solid rgba(45, 65, 85, 0.4);
-  }
-
-  .panel-title {
-    @apply text-[11px] font-bold uppercase tracking-[0.2em];
-  }
-
-  /* Inner card sections - glass effect */
-  .inner-card {
-    @apply rounded-lg transition-colors;
-    background: rgba(8, 12, 18, 0.7);
-    border: 1px solid rgba(45, 65, 85, 0.35);
-    backdrop-filter: blur(8px);
-  }
-
-  .inner-card:hover {
-    background: rgba(10, 15, 22, 0.8);
-    border-color: rgba(55, 80, 105, 0.45);
-  }
-
-  /* Three-dot menu */
-  .menu-dots {
-    @apply flex gap-1;
-  }
-  .menu-dots span {
-    @apply w-1 h-1 rounded-full bg-slate-500/50;
-  }
-
-  /* Status indicator with strong glow */
-  .status-dot {
-    @apply w-2 h-2 rounded-full;
-  }
-  .status-dot.online { 
-    @apply bg-emerald-400;
-    box-shadow: 0 0 6px rgba(16,185,129,0.8), 0 0 20px rgba(16,185,129,0.4), 0 0 40px rgba(16,185,129,0.2);
-  }
-  .status-dot.warning { 
-    @apply bg-amber-400;
-    box-shadow: 0 0 6px rgba(245,158,11,0.8), 0 0 20px rgba(245,158,11,0.4), 0 0 40px rgba(245,158,11,0.2);
-  }
-  .status-dot.critical { 
-    @apply bg-red-400;
-    box-shadow: 0 0 6px rgba(239,68,68,0.8), 0 0 20px rgba(239,68,68,0.4), 0 0 40px rgba(239,68,68,0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
 
 @layer utilities {
-  /* Audio waveform animation */
-  @keyframes waveform {
-    0%, 100% { transform: scaleY(0.3); }
-    50% { transform: scaleY(1); }
+  /* --- 1. CRT SCANLINES --- */
+  .scanlines {
+    background: linear-gradient(
+      to bottom,
+      rgba(255,255,255,0),
+      rgba(255,255,255,0) 50%,
+      rgba(0,0,0,0.2) 50%,
+      rgba(0,0,0,0.2)
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    opacity: 0.15;
   }
 
-  @keyframes pulse-glow {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
+  /* --- 2. RED ALERT PULSE --- */
+  @keyframes pulse-red {
+    0%, 100% { background-color: rgba(220, 38, 38, 0.0); }
+    50% { background-color: rgba(220, 38, 38, 0.15); }
+  }
+  .animate-pulse-red {
+    animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-  }
-
-  .waveform-bar {
-    animation: waveform 0.6s ease-in-out infinite;
-  }
-
-  .glow-pulse {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  .animate-float {
-    animation: float 4s ease-in-out infinite;
-  }
-
-  /* Radar sweep animation */
-  @keyframes radar-sweep {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  .radar-sweep {
-    animation: radar-sweep 4s linear infinite;
-  }
-
-  /* Text glow effects */
-  .text-glow-cyan {
-    text-shadow: 0 0 10px rgba(0, 212, 255, 0.6), 0 0 30px rgba(0, 212, 255, 0.4), 0 0 60px rgba(0, 212, 255, 0.2);
-  }
-
-  .text-glow-red {
-    text-shadow: 0 0 10px rgba(239, 68, 68, 0.6), 0 0 30px rgba(239, 68, 68, 0.4), 0 0 60px rgba(239, 68, 68, 0.2);
-  }
-
-  .text-glow-amber {
-    text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 0 30px rgba(245, 158, 11, 0.4), 0 0 60px rgba(245, 158, 11, 0.2);
-  }
-
-  .text-glow-emerald {
-    text-shadow: 0 0 10px rgba(16, 185, 129, 0.6), 0 0 30px rgba(16, 185, 129, 0.4), 0 0 60px rgba(16, 185, 129, 0.2);
-  }
-
-  /* Scrollbar styling */
-  .scrollbar-tactical::-webkit-scrollbar {
-    width: 4px;
-  }
-  .scrollbar-tactical::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .scrollbar-tactical::-webkit-scrollbar-thumb {
-    background: rgba(45, 65, 85, 0.5);
-    border-radius: 2px;
-  }
-  .scrollbar-tactical::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 212, 255, 0.4);
-  }
+  /* Text Glows */
+  .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 212, 255, 0.6); }
+  .text-glow-red { text-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
 }

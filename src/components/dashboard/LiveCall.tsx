@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Mic, Radio, Signal, Globe } from "lucide-react";
 
-// 1. Add 'onPTTChange' to props
 export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, onPTTChange?: (active: boolean) => void }) {
   const [callTime, setCallTime] = useState(0);
   const [isPTTActive, setIsPTTActive] = useState(false);
@@ -16,10 +15,9 @@ export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, o
     return () => clearInterval(timer);
   }, []);
 
-  // 2. Helper to handle PTT state changes
   const handlePTT = (active: boolean) => {
     setIsPTTActive(active);
-    if (onPTTChange) onPTTChange(active); // Notify parent immediately
+    if (onPTTChange) onPTTChange(active); 
   };
 
   const formatTime = (s: number) => {
@@ -33,9 +31,10 @@ export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, o
   };
 
   return (
-    <div className="floating-card floating-card-cyan flex flex-col h-full bg-zinc-900 border-zinc-800">
-      {/* Header - Reduced padding to p-3 */}
-      <div className="panel-header border-b border-white/5 p-3 flex justify-between items-center shrink-0">
+    // BG Transparent + removed 'floating-card' (parent handles it)
+    <div className="flex flex-col h-full bg-transparent">
+      
+      <div className="panel-header border-b border-white/5 p-3 flex justify-between items-center shrink-0 bg-black/20">
         <span className="text-[10px] font-black text-cyan-400 tracking-widest uppercase flex items-center gap-2">
           <Radio className={`w-3 h-3 ${isPTTActive ? "animate-ping" : ""}`} /> 
           Comms Link
@@ -44,14 +43,10 @@ export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, o
           <div className={`w-1 h-2 rounded-sm ${signalStrength > 20 ? "bg-cyan-500" : "bg-zinc-700"}`} />
           <div className={`w-1 h-2 rounded-sm ${signalStrength > 40 ? "bg-cyan-500" : "bg-zinc-700"}`} />
           <div className={`w-1 h-2 rounded-sm ${signalStrength > 60 ? "bg-cyan-500" : "bg-zinc-700"}`} />
-          <div className={`w-1 h-2 rounded-sm ${signalStrength > 80 ? "bg-cyan-500" : "bg-zinc-700"}`} />
         </div>
       </div>
 
-      {/* Content - Reduced padding to p-3 and added overflow-y-auto as safety */}
       <div className="flex-1 p-3 flex flex-col min-h-0 overflow-y-auto">
-        
-        {/* Main Channel Info */}
         <div className="shrink-0 mb-2">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">Active Freq</span>
@@ -69,8 +64,7 @@ export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, o
           </div>
         </div>
 
-        {/* Big Timer - Reduced vertical padding (py-2) and text size (text-5xl) */}
-        <div className="text-center py-3 bg-zinc-950/50 rounded border border-zinc-800 mb-3 shrink-0">
+        <div className="text-center py-3 bg-white/5 rounded border border-white/10 mb-3 shrink-0">
           <div className="text-5xl font-black font-mono text-white tabular-nums tracking-tighter text-glow-cyan leading-none">
             {formatTime(callTime)}
           </div>
@@ -79,12 +73,10 @@ export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, o
           </div>
         </div>
 
-        {/* Tactical Controls Grid - Pushed to bottom with mt-auto */}
         <div className="grid grid-cols-2 gap-2 mt-auto shrink-0">
-          {/* Language Toggle */}
           <button 
             onClick={toggleLanguage}
-            className="flex flex-col items-center justify-center p-2 rounded bg-zinc-950 border border-zinc-800 hover:border-cyan-500/30 transition-all group"
+            className="flex flex-col items-center justify-center p-2 rounded bg-white/5 border border-white/10 hover:border-cyan-500/30 transition-all group"
           >
             <div className="flex items-center gap-1 mb-0.5">
               <Globe className="w-3 h-3 text-zinc-500 group-hover:text-cyan-400" />
@@ -95,10 +87,9 @@ export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, o
             </span>
           </button>
 
-          {/* Signal Boost */}
           <button 
             onClick={() => setSignalStrength(100)}
-            className="flex flex-col items-center justify-center p-2 rounded bg-zinc-950 border border-zinc-800 hover:border-emerald-500/30 transition-all group"
+            className="flex flex-col items-center justify-center p-2 rounded bg-white/5 border border-white/10 hover:border-emerald-500/30 transition-all group"
           >
             <div className="flex items-center gap-1 mb-0.5">
               <Signal className="w-3 h-3 text-zinc-500 group-hover:text-emerald-400" />
@@ -107,7 +98,6 @@ export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, o
             <span className="text-[10px] font-bold text-white group-hover:text-emerald-400">{signalStrength}%</span>
           </button>
 
-          {/* PTT BUTTON - Using handlePTT for Mouse Events */}
           <button
             onMouseDown={() => handlePTT(true)}
             onMouseUp={() => handlePTT(false)}
