@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Activity, Zap, Clock } from "lucide-react";
 
 export function Header() {
   const [time, setTime] = useState(new Date());
@@ -36,19 +35,20 @@ export function Header() {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           {/* Logo Icon */}
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-cyan-500/40 bg-cyan-500/10" style={{ boxShadow: '0 0 20px rgba(0,212,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1)' }}>
-            <svg viewBox="0 0 24 24" className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+          <div className="flex items-center justify-center w-9 h-9">
+            <img 
+              src="/favicon.svg" 
+              alt="RESQDESK Logo" 
+              className="w-8 h-8"
+            />
           </div>
+
           <div>
             <h1 className="text-lg font-bold tracking-tight text-white">
-              RESQ<span className="text-cyan-400">CONNECT</span>
+              RESQ<span className="text-cyan-400">DESK</span>
             </h1>
             <p className="text-[9px] text-slate-500 uppercase tracking-[0.15em] -mt-0.5">
-              Tactical Dispatch System v2.4
+              DISASTER MANAGEMENT SYSTEM
             </p>
           </div>
         </div>
@@ -57,17 +57,15 @@ export function Header() {
       {/* Center: System Status */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px rgba(16,185,129,0.9), 0 0 20px rgba(16,185,129,0.5), 0 0 40px rgba(16,185,129,0.3)' }} />
-          <span className="text-xs font-medium text-slate-400">SYSTEM ONLINE</span>
+          <span className="text-xs font-medium text-slate-400">SYSTEM:ONLINE</span>
         </div>
         
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <Zap className="w-3.5 h-3.5 text-cyan-400" />
           <span>LATENCY: <span className="text-cyan-400">24ms</span></span>
         </div>
 
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <Activity className="w-3.5 h-3.5 text-amber-400" />
+
           <span>ACTIVE: <span className="text-amber-400">03</span></span>
         </div>
       </div>
