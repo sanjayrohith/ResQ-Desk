@@ -3,22 +3,37 @@ import { Header, LiveCall, LiveTranscription, IncidentDetails, MapPanel } from "
 import { IncidentData } from "@/components/dashboard/IncidentDetails";
 import { DispatchPopup } from "@/components/dashboard/DispatchPopup";
 
-const Index = () => {
-  const [incidentData, setIncidentData] = useState<IncidentData>({
-    location: "Awaiting data...",
-    emergency_type: "Pending",
-    severity: "Normal",
-    keywords: [],
-    reasoning: "System standby. Waiting for voice input...",
-    confidence_score: 0
-  });
+// 1. DEFINE THE "RESET" STATE (The dashed lines/empty values)
+const INITIAL_STATE: IncidentData = {
+  location: "Awaiting data...",
+  emergency_type: "Pending",
+  severity: "Normal",
+  keywords: [],
+  reasoning: "System standby. Waiting for voice input...",
+  confidence_score: 0
+};
 
+const Index = () => {
+  // Initialize with the Empty State
+  const [incidentData, setIncidentData] = useState<IncidentData>(INITIAL_STATE);
+  
   const [fullApiResponse, setFullApiResponse] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  
-  // 1. New State for Operator Override
   const [isOperatorSpeaking, setIsOperatorSpeaking] = useState(false);
+
+  // 2. THE RESET FUNCTION
+  // This runs automatically when the "DISPATCHED" popup finishes
+  const handleDispatchComplete = () => {
+    setShowPopup(false);
+    
+    // Small delay to let the popup fade out before wiping the data
+    setTimeout(() => {
+      setIncidentData(INITIAL_STATE); // Wipe the form
+      setFullApiResponse(null);       // Clear the backend cache
+      console.log("🔄 System Reset for next scenario");
+    }, 300);
+  };
 
   const handleLineComplete = async (transcript: string) => {
     if (!transcript || transcript.length < 2) return;
@@ -53,11 +68,12 @@ const Index = () => {
   return (
     <div className="flex flex-col h-screen w-screen bg-background overflow-hidden font-mono text-zinc-100">
       
+      {/* 3. CONNECT THE RESET HANDLER */}
       {showPopup && fullApiResponse && (
         <DispatchPopup 
           data={fullApiResponse} 
           onCancel={() => setShowPopup(false)}
-          onComplete={() => setShowPopup(false)} 
+          onComplete={handleDispatchComplete} // <--- Reset triggers here
         />
       )}
 
@@ -67,11 +83,9 @@ const Index = () => {
         {/* LEFT COLUMN */}
         <div className="col-span-3 flex flex-col gap-3 min-w-0 h-full">
           <div className="flex-[0.4] glass-panel relative overflow-hidden">
-            {/* 2. Pass State Handler */}
             <LiveCall onPTTChange={setIsOperatorSpeaking} />
           </div>
           <div className="flex-1 min-h-0 glass-panel relative overflow-hidden">
-            {/* 3. Pass Mute State */}
             <LiveTranscription 
               onLineComplete={handleLineComplete} 
               isMuted={isOperatorSpeaking} 
@@ -81,7 +95,15 @@ const Index = () => {
 
         {/* MIDDLE COLUMN */}
         <div className="col-span-4 min-w-0 h-full">
-          <IncidentDetails data={incidentData} isLoading={isAnalyzing} />
+          {/* 4. THE KEY PROP TRICK 
+            By changing the 'key' whenever location changes, we force React 
+            to re-play all CSS animations (typing effect, bar growth) from scratch.
+          */}
+          <IncidentDetails 
+            key={incidentData.location} 
+            data={incidentData} 
+            isLoading={isAnalyzing} 
+          />
         </div>
 
         {/* RIGHT COLUMN */}
