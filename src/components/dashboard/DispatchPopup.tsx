@@ -57,7 +57,8 @@ export function DispatchPopup({ data, onCancel, onComplete }: DispatchPopupProps
               <div className="text-zinc-400 text-sm mb-6 font-mono">
                 Unit <span className="text-cyan-400 font-bold">{data.suggested_unit || "AUTO-ASSIGN"}</span> routed to:
                 <div className="text-white font-bold mt-1 flex items-center justify-center gap-2">
-                  <MapPin className="w-4 h-4" /> {data.analysis?.location || "Target Zone"}
+                  {/* FIX: Removed .analysis here */}
+                  <MapPin className="w-4 h-4" /> {data.location || "Target Zone"}
                 </div>
               </div>
 

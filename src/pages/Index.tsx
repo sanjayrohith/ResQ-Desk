@@ -1,40 +1,44 @@
 import { useState } from "react";
 import { Header, LiveCall, LiveTranscription, IncidentDetails, MapPanel } from "@/components/dashboard";
-import { IncidentData } from "@/components/dashboard/IncidentDetails";
 import { DispatchPopup } from "@/components/dashboard/DispatchPopup";
 
-// 1. DEFINE EMPTY STATE
-// Use a function to ensure we always get a FRESH object, not a reference
+// 1. UPDATE INTERFACE TO MATCH NEW FLATTENED BACKEND
+export interface IncidentData {
+  incident_id?: string;
+  location: string;
+  emergency_type: string;
+  severity: string;
+  keywords: string[];
+  reasoning: string;
+  confidence_score: number;
+  suggested_unit?: string;
+}
+
+// 2. DEFINE EMPTY STATE
 const getInitialState = (): IncidentData => ({
   location: "Awaiting data...",
   emergency_type: "Pending",
   severity: "Normal",
   keywords: [],
   reasoning: "System standby. Waiting for voice input...",
-  confidence_score: 0
+  confidence_score: 0,
+  suggested_unit: ""
 });
 
 const Index = () => {
   const [incidentData, setIncidentData] = useState<IncidentData>(getInitialState());
-  const [fullApiResponse, setFullApiResponse] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [isOperatorSpeaking, setIsOperatorSpeaking] = useState(false);
   
-  // 2. NEW: Session ID for forcing hard resets
+  // Session Key for forcing UI resets
   const [resetKey, setResetKey] = useState(0);
 
-  // 3. THE RESET FUNCTION
   const resetDashboard = () => {
     console.log("🛑 HARD RESET TRIGGERED");
     setShowPopup(false);
-    
-    // Force a React re-render by updating the key
     setResetKey(prev => prev + 1);
-    
-    // Wipe data with a fresh object copy
     setIncidentData(getInitialState());
-    setFullApiResponse(null);       
   };
 
   const handleLineComplete = async (transcript: string) => {
@@ -51,11 +55,13 @@ const Index = () => {
 
       if (!response.ok) throw new Error("Backend connection failed");
 
+      // --- THE KEY CHANGE IS HERE ---
       const backendData = await response.json();
+      console.log("🔥 Backend Data Received:", backendData);
 
-      if (backendData.analysis) {
-        setIncidentData(backendData.analysis);
-        setFullApiResponse(backendData);
+      // The backend response is now FLAT. We don't need to check for .analysis
+      if (backendData.incident_id) {
+        setIncidentData(backendData); // Directly set the response
         setTimeout(() => setShowPopup(true), 500);
       }
 
@@ -69,9 +75,9 @@ const Index = () => {
   return (
     <div className="flex flex-col h-screen w-screen bg-background overflow-hidden font-mono text-zinc-100">
       
-      {showPopup && fullApiResponse && (
+      {showPopup && (
         <DispatchPopup 
-          data={fullApiResponse} 
+          data={incidentData} // Pass the flat data directly
           onCancel={resetDashboard}   
           onComplete={resetDashboard} 
         />
@@ -93,9 +99,6 @@ const Index = () => {
         </div>
 
         <div className="col-span-4 min-w-0 h-full">
-          {/* 4. USE RESET KEY HERE 
-             This guarantees the component is destroyed and recreated empty on every reset.
-          */}
           <IncidentDetails 
             key={resetKey} 
             data={incidentData} 
