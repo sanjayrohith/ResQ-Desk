@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Header, LiveCall, LiveTranscription, IncidentDetails, MapPanel } from "@/components/dashboard";
 import { DispatchPopup } from "@/components/dashboard/DispatchPopup";
 
-// 1. UPDATE INTERFACE TO MATCH NEW FLATTENED BACKEND
+// 1. UPDATE INTERFACE (Matches your new Backend Schema)
 export interface IncidentData {
   incident_id?: string;
   location: string;
@@ -14,7 +14,6 @@ export interface IncidentData {
   suggested_unit?: string;
 }
 
-// 2. DEFINE EMPTY STATE
 const getInitialState = (): IncidentData => ({
   location: "Awaiting data...",
   emergency_type: "Pending",
@@ -30,12 +29,10 @@ const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [isOperatorSpeaking, setIsOperatorSpeaking] = useState(false);
-  
-  // Session Key for forcing UI resets
   const [resetKey, setResetKey] = useState(0);
 
   const resetDashboard = () => {
-    console.log("🛑 HARD RESET TRIGGERED");
+    console.log("🛑 DASHBOARD RESET");
     setShowPopup(false);
     setResetKey(prev => prev + 1);
     setIncidentData(getInitialState());
@@ -55,14 +52,20 @@ const Index = () => {
 
       if (!response.ok) throw new Error("Backend connection failed");
 
-      // --- THE KEY CHANGE IS HERE ---
       const backendData = await response.json();
       console.log("🔥 Backend Data Received:", backendData);
 
-      // The backend response is now FLAT. We don't need to check for .analysis
+      // --- THE FIX ---
+      // Check for 'incident_id' directly (Flat Structure)
       if (backendData.incident_id) {
-        setIncidentData(backendData); // Directly set the response
-        setTimeout(() => setShowPopup(true), 500);
+        
+        // 1. Update the UI (Judges see the auto-fill happen)
+        setIncidentData(backendData); 
+
+        // 2. Wait 4 Seconds, THEN show the popup
+        setTimeout(() => {
+          setShowPopup(true);
+        }, 4000); 
       }
 
     } catch (error) {
@@ -99,6 +102,7 @@ const Index = () => {
         </div>
 
         <div className="col-span-4 min-w-0 h-full">
+          {/* Key prop ensures the typing animation replays on reset */}
           <IncidentDetails 
             key={resetKey} 
             data={incidentData} 
