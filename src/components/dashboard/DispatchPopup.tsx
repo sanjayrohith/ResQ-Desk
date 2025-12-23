@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Ambulance, CheckCircle2, MapPin } from "lucide-react";
+import { Ambulance, CheckCircle2, MapPin, XCircle } from "lucide-react";
 
 interface DispatchPopupProps {
   data: any;
@@ -12,23 +12,37 @@ export function DispatchPopup({ data, onCancel, onComplete }: DispatchPopupProps
   const [dispatched, setDispatched] = useState(false);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
+
     if (count > 0) {
-      const timer = setTimeout(() => setCount(count - 1), 1000);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setCount(count - 1), 1000);
     } else {
       setDispatched(true);
-      const closeTimer = setTimeout(() => onComplete(), 2000); // Close after "GO" animation
-      return () => clearTimeout(closeTimer);
+      timer = setTimeout(() => {
+        // Only call complete if we haven't been cancelled
+        onComplete();
+      }, 2000); 
     }
+    
+    // CLEANUP: If the user clicks 'Abort', this runs and stops onComplete from firing
+    return () => clearTimeout(timer);
   }, [count, onComplete]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="relative w-full max-w-md p-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl shadow-2xl">
-        <div className="bg-zinc-950 rounded-lg p-8 text-center border border-white/10">
+        <div className="bg-zinc-950 rounded-lg p-8 text-center border border-white/10 relative overflow-hidden">
           
           {!dispatched ? (
             <>
+              {/* Top Right X Button */}
+              <button 
+                onClick={onCancel} 
+                className="absolute top-2 right-2 p-2 text-zinc-600 hover:text-red-500 transition-colors z-20"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+
               <div className="mb-6 flex justify-center">
                 <div className="relative">
                   <div className="absolute inset-0 bg-cyan-500 blur-xl opacity-20 animate-pulse"></div>
@@ -51,9 +65,10 @@ export function DispatchPopup({ data, onCancel, onComplete }: DispatchPopupProps
                 {count}
               </div>
 
+              {/* Main Abort Button */}
               <button 
                 onClick={onCancel}
-                className="text-xs text-red-400 hover:text-red-300 uppercase tracking-widest font-bold border-b border-red-500/30 pb-1"
+                className="text-xs text-red-400 hover:text-red-300 uppercase tracking-widest font-bold border-b border-red-500/30 pb-1 hover:border-red-500 transition-all cursor-pointer z-20"
               >
                 Abort Sequence
               </button>
