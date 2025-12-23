@@ -20,16 +20,27 @@ const Index = () => {
     setIsAnalyzing(true);
 
     try {
+      console.log("Sending to Backend:", transcript);
+
       const response = await fetch("http://127.0.0.1:8000/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // --- THE FIX IS HERE ---
+        // Change key from 'transcript' to 'text' to match your Python schema
+        body: JSON.stringify({ text: transcript }), 
       });
-      if (!response.ok) throw new Error(`Backend Error: ${response.status}`);
+
+      if (!response.ok) {
+        throw new Error(`Backend Error: ${response.status}`);
+      }
+
       const aiData: IncidentData = await response.json();
       setIncidentData(aiData);
+
     } catch (error) {
-      console.error("AI Backend Error:", error);
+      console.error("Failed to connect:", error);
     } finally {
       setIsAnalyzing(false);
     }
