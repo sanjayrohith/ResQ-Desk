@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Ambulance, Flame, Map as MapIcon, Layers, Zap } from "lucide-react";
+import { Ambulance, Flame, Map as MapIcon, Layers, Zap, Crosshair } from "lucide-react";
 
 interface MapPanelProps {
   severity: string;
@@ -43,46 +43,55 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
       {/* THE MAP CONTAINER */}
       <div className="relative flex-1 bg-[#09090b] overflow-hidden group">
         
-        {/* 1. DARK MAP BACKGROUND (The "Realism" Hack) */}
-        {/* We use a dark grayscale map pattern to simulate a satellite view */}
+        {/* 1. DARK MAP BACKGROUND */}
         <div 
           className="absolute inset-0 opacity-40 grayscale contrast-125"
           style={{
-            backgroundImage: `url('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/14/11756/7483.png')`, // Sample Dark Map Tile
+            backgroundImage: `url('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/14/11756/7483.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             filter: 'brightness(0.7) contrast(1.2)'
           }}
         />
         
-        {/* Grid Overlay for Tactical Feel */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
-        {/* 2. THE HEATMAP (Only shows when incident is active) */}
+        {/* 2. THE INCIDENT ZONE (CENTERED & ANIMATED) */}
         {isDataComplete && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-             {/* Large Diffused Heat Area (Blue/Green/Red Gradient) */}
+          // FIX: Added 'flex items-center justify-center' to perfectly center children
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-0 h-0">
+             
+             {/* Animation 1: Massive Ambient Glow */}
              <div 
-                className={`w-64 h-64 rounded-full blur-[60px] transition-all duration-1000 ${pulse ? "opacity-40 scale-105" : "opacity-30 scale-100"}`}
+                className={`absolute w-96 h-96 rounded-full blur-[80px] transition-all duration-1000 ${pulse ? "opacity-30 scale-105" : "opacity-20 scale-100"}`}
                 style={{
-                  background: 'radial-gradient(circle, rgba(239,68,68,0.8) 0%, rgba(245,158,11,0.5) 40%, rgba(16,185,129,0.3) 70%, transparent 100%)'
+                  background: 'radial-gradient(circle, rgba(239,68,68,0.6) 0%, rgba(245,158,11,0.3) 40%, transparent 70%)'
                 }}
              />
+
+             {/* Animation 2: Expanding Sonar Ripples */}
+             <div className="absolute w-32 h-32 border border-red-500/30 rounded-full animate-[ping_3s_linear_infinite]" />
+             <div className="absolute w-32 h-32 border border-red-500/20 rounded-full animate-[ping_3s_linear_infinite_1s]" />
+
+             {/* Animation 3: Rotating Tactical Ring */}
+             <div className="absolute w-24 h-24 border border-red-500/40 border-t-transparent border-l-transparent rounded-full animate-spin" />
              
-             {/* Core Intensity Marker */}
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+             {/* Core Icon */}
+             <div className="relative z-20 flex flex-col items-center">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-red-500 blur-xl opacity-60 animate-pulse"></div>
-                  <Flame className="w-8 h-8 text-white relative z-10 drop-shadow-lg" />
-                  
-                  {/* Danger Ring */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 border border-red-500/50 rounded-full animate-ping" />
+                  <div className="absolute inset-0 bg-red-600 blur-xl opacity-80 animate-pulse"></div>
+                  <Flame className="w-8 h-8 text-white relative z-10 drop-shadow-[0_0_15px_rgba(239,68,68,1)]" />
+                </div>
+                {/* Text Label Below */}
+                <div className="absolute top-10 bg-black/80 backdrop-blur border border-red-500/50 px-2 py-0.5 rounded text-[8px] font-black text-red-500 uppercase tracking-widest whitespace-nowrap">
+                   Thermal Spike
                 </div>
              </div>
+
           </div>
         )}
 
-        {/* 3. UNITS (Tactical Dots) */}
+        {/* 3. UNITS */}
         {units.map((unit) => (
           <button
             key={unit.id}
@@ -90,17 +99,14 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
             className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500 group/marker z-20`}
             style={{ left: `${unit.x}%`, top: `${unit.y}%` }}
           >
-            {/* Range Ring */}
             <div className={`absolute inset-0 -m-4 border border-white/10 rounded-full transition-all duration-500 
               ${selectedUnit === unit.id ? "scale-100 opacity-100" : "scale-0 opacity-0"}`} 
             />
             
-            {/* The Unit Dot */}
             <div className={`w-3 h-3 rounded-full shadow-[0_0_10px_black] border border-white/20 relative z-10 transition-transform hover:scale-125 ${unit.color} 
               ${selectedUnit === unit.id ? "ring-2 ring-white scale-125" : ""}`}
             ></div>
 
-            {/* Label (Always visible for clarity now) */}
             <div className={`absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap transition-all`}>
               <div className="bg-black/80 backdrop-blur-[2px] px-1.5 py-0.5 rounded border border-white/10 flex flex-col items-center">
                 <span className={`text-[8px] font-bold leading-none mb-0.5 ${unit.text}`}>{unit.id}</span>
@@ -110,7 +116,7 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
           </button>
         ))}
 
-        {/* 4. ROUTE LINE (When Incident + A12 Active) */}
+        {/* 4. ROUTE LINE */}
         {isDataComplete && selectedUnit === "A12" && (
            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
              <defs>
@@ -118,11 +124,18 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
                  <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" />
                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0.8" />
                </linearGradient>
+               {/* Glowing Filter for the line */}
+               <filter id="glow">
+                  <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                  <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+               </filter>
                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                  <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
                </marker>
              </defs>
-             {/* Dashed Path */}
              <line 
                x1="65%" y1="40%" 
                x2="50%" y2="50%" 
@@ -131,12 +144,13 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
                strokeDasharray="4 4" 
                className="animate-[dash_1s_linear_infinite]"
                markerEnd="url(#arrowhead)"
+               filter="url(#glow)" 
              />
            </svg>
         )}
       </div>
 
-      {/* Footer / Controls */}
+      {/* Footer */}
       <div className="p-3 bg-zinc-900 border-t border-white/5 z-20 shrink-0">
         <div className="flex items-center justify-between mb-3">
            <div className="flex items-center gap-2">
@@ -146,7 +160,6 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
            {isDataComplete && <span className="text-[9px] font-black text-red-500 animate-pulse">HAZARD DETECTED</span>}
         </div>
         
-        {/* Quick Legend */}
         <div className="flex justify-between gap-1">
           {units.map((unit) => (
              <div 
@@ -164,7 +177,6 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
         </div>
       </div>
       
-      {/* CSS Animation for the dashed line */}
       <style>{`
         @keyframes dash {
           to {
