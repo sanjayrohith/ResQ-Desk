@@ -1,14 +1,26 @@
 import { useState, useEffect } from "react";
-import { Mic, PhoneOff, Radio } from "lucide-react";
+import { Mic, Radio, Signal, Globe } from "lucide-react";
 
-export function LiveCall({ onCallEnd }: { onCallEnd?: () => void }) {
-  const [callTime, setCallTime] = useState(320); // 05:20
+// 1. Add 'onPTTChange' to props
+export function LiveCall({ onCallEnd, onPTTChange }: { onCallEnd?: () => void, onPTTChange?: (active: boolean) => void }) {
+  const [callTime, setCallTime] = useState(0);
   const [isPTTActive, setIsPTTActive] = useState(false);
+  const [signalStrength, setSignalStrength] = useState(85);
+  const [language, setLanguage] = useState("TAMIL (AUTO)");
 
   useEffect(() => {
-    const timer = setInterval(() => setCallTime((t) => t + 1), 1000);
+    const timer = setInterval(() => {
+      setCallTime((t) => t + 1);
+      setSignalStrength(prev => Math.min(100, Math.max(40, prev + (Math.random() > 0.5 ? 2 : -2))));
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // 2. Helper to handle PTT state changes
+  const handlePTT = (active: boolean) => {
+    setIsPTTActive(active);
+    if (onPTTChange) onPTTChange(active); // Notify parent immediately
+  };
 
   const formatTime = (s: number) => {
     const mins = Math.floor(s / 60);
@@ -16,77 +28,98 @@ export function LiveCall({ onCallEnd }: { onCallEnd?: () => void }) {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === "TAMIL (AUTO)" ? "ENGLISH (MANUAL)" : "TAMIL (AUTO)");
+  };
+
   return (
-    <div className="floating-card floating-card-cyan flex flex-col h-full">
-      {/* Header */}
-      <div className="panel-header">
-        <span className="panel-title text-cyan-400 text-glow-cyan">
-          Comms Channel
+    <div className="floating-card floating-card-cyan flex flex-col h-full bg-zinc-900 border-zinc-800">
+      {/* Header - Reduced padding to p-3 */}
+      <div className="panel-header border-b border-white/5 p-3 flex justify-between items-center shrink-0">
+        <span className="text-[10px] font-black text-cyan-400 tracking-widest uppercase flex items-center gap-2">
+          <Radio className={`w-3 h-3 ${isPTTActive ? "animate-ping" : ""}`} /> 
+          Comms Link
         </span>
-        <div className="flex gap-0.5">
-          <span className="w-1 h-1 rounded-full bg-slate-600" />
-          <span className="w-1 h-1 rounded-full bg-slate-600" />
-          <span className="w-1 h-1 rounded-full bg-slate-600" />
+        <div className="flex gap-1">
+          <div className={`w-1 h-2 rounded-sm ${signalStrength > 20 ? "bg-cyan-500" : "bg-zinc-700"}`} />
+          <div className={`w-1 h-2 rounded-sm ${signalStrength > 40 ? "bg-cyan-500" : "bg-zinc-700"}`} />
+          <div className={`w-1 h-2 rounded-sm ${signalStrength > 60 ? "bg-cyan-500" : "bg-zinc-700"}`} />
+          <div className={`w-1 h-2 rounded-sm ${signalStrength > 80 ? "bg-cyan-500" : "bg-zinc-700"}`} />
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 p-4 flex flex-col">
-        {/* Active Channel Display */}
-        <div className="mb-4">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Active Channel</div>
-          <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4 text-cyan-400" style={{ filter: 'drop-shadow(0 0 4px rgba(0,212,255,0.6))' }} />
-            <span className="text-lg font-bold text-cyan-400 tracking-tight text-glow-cyan">SECURE_01</span>
+      {/* Content - Reduced padding to p-3 and added overflow-y-auto as safety */}
+      <div className="flex-1 p-3 flex flex-col min-h-0 overflow-y-auto">
+        
+        {/* Main Channel Info */}
+        <div className="shrink-0 mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">Active Freq</span>
+            <span className="text-[9px] text-zinc-500 font-mono">ENCRYPTED</span>
           </div>
-        </div>
-
-        {/* Call Timer */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="text-5xl font-bold font-mono text-white tracking-tight tabular-nums">
-              {formatTime(callTime)}
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-full shrink-0 ${isPTTActive ? "bg-red-500/20 text-red-500" : "bg-cyan-500/10 text-cyan-400"}`}>
+              {isPTTActive ? <Mic className="w-5 h-5 animate-pulse" /> : <Radio className="w-5 h-5" />}
             </div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Live Feed</div>
+            <div>
+              <div className={`text-xl font-black tracking-tight ${isPTTActive ? "text-red-500" : "text-white"}`}>
+                {isPTTActive ? "TRANSMITTING" : "SECURE_01"}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Status Info */}
-        <div className="space-y-2 mb-4 text-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-slate-500 uppercase text-[10px] tracking-wider">Latency</span>
-            <span className="text-cyan-400 font-mono">24ms</span>
+        {/* Big Timer - Reduced vertical padding (py-2) and text size (text-5xl) */}
+        <div className="text-center py-3 bg-zinc-950/50 rounded border border-zinc-800 mb-3 shrink-0">
+          <div className="text-5xl font-black font-mono text-white tabular-nums tracking-tighter text-glow-cyan leading-none">
+            {formatTime(callTime)}
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-slate-500 uppercase text-[10px] tracking-wider">Language</span>
-            <span className="text-slate-300 px-2 py-0.5 bg-[#1a2332] rounded text-xs">TAMIL (AUTO)</span>
+          <div className="text-[9px] text-cyan-500/50 uppercase tracking-[0.3em] font-bold mt-1">
+            Session Duration
           </div>
         </div>
 
-        {/* Control Buttons */}
-        <div className="mt-auto grid grid-cols-2 gap-3">
+        {/* Tactical Controls Grid - Pushed to bottom with mt-auto */}
+        <div className="grid grid-cols-2 gap-2 mt-auto shrink-0">
+          {/* Language Toggle */}
+          <button 
+            onClick={toggleLanguage}
+            className="flex flex-col items-center justify-center p-2 rounded bg-zinc-950 border border-zinc-800 hover:border-cyan-500/30 transition-all group"
+          >
+            <div className="flex items-center gap-1 mb-0.5">
+              <Globe className="w-3 h-3 text-zinc-500 group-hover:text-cyan-400" />
+              <span className="text-[9px] text-zinc-500 uppercase font-bold">Lang</span>
+            </div>
+            <span className="text-[10px] font-bold text-white group-hover:text-cyan-400 truncate w-full text-center">
+              {language.split(" ")[0]}
+            </span>
+          </button>
+
+          {/* Signal Boost */}
+          <button 
+            onClick={() => setSignalStrength(100)}
+            className="flex flex-col items-center justify-center p-2 rounded bg-zinc-950 border border-zinc-800 hover:border-emerald-500/30 transition-all group"
+          >
+            <div className="flex items-center gap-1 mb-0.5">
+              <Signal className="w-3 h-3 text-zinc-500 group-hover:text-emerald-400" />
+              <span className="text-[9px] text-zinc-500 uppercase font-bold">Signal</span>
+            </div>
+            <span className="text-[10px] font-bold text-white group-hover:text-emerald-400">{signalStrength}%</span>
+          </button>
+
+          {/* PTT BUTTON - Using handlePTT for Mouse Events */}
           <button
-            onMouseDown={() => setIsPTTActive(true)}
-            onMouseUp={() => setIsPTTActive(false)}
-            onMouseLeave={() => setIsPTTActive(false)}
-            className={`flex items-center justify-center gap-2 py-3 rounded-lg border transition-all ${
-              isPTTActive 
-                ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-400" 
-                : "inner-card text-slate-300 hover:border-cyan-500/30"
-            }`}
-            style={isPTTActive ? { boxShadow: '0 0 20px rgba(0,212,255,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' } : {}}
+            onMouseDown={() => handlePTT(true)}
+            onMouseUp={() => handlePTT(false)}
+            onMouseLeave={() => handlePTT(false)}
+            className={`col-span-2 py-3 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2
+              ${isPTTActive 
+                ? "bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.5)] scale-[0.98]" 
+                : "bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_15px_rgba(8,145,178,0.3)]"
+              }`}
           >
             <Mic className="w-4 h-4" />
-            <span className="text-[11px] font-bold uppercase tracking-wider">PTT</span>
-          </button>
-          
-          <button
-            onClick={onCallEnd}
-            className="flex items-center justify-center gap-2 py-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all"
-            style={{ boxShadow: '0 0 15px rgba(239,68,68,0.15)' }}
-          >
-            <PhoneOff className="w-4 h-4" />
-            <span className="text-[11px] font-bold uppercase tracking-wider">End Call</span>
+            {isPTTActive ? "RELEASE TO LISTEN" : "PUSH TO TALK"}
           </button>
         </div>
       </div>

@@ -9,7 +9,8 @@ interface TranscriptEntry {
   type: "caller" | "system" | "operator";
 }
 
-export function LiveTranscription({ onLineComplete }: { onLineComplete: (t: string) => void }) {
+// 1. Accept 'isMuted' prop
+export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete: (t: string) => void, isMuted: boolean }) {
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
   const [history, setHistory] = useState<TranscriptEntry[]>([
     { text: "There's smoke coming from the second floor...", time: "10:42:15", type: "caller" },
@@ -18,8 +19,17 @@ export function LiveTranscription({ onLineComplete }: { onLineComplete: (t: stri
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // 2. Clear transcript immediately if muted so no partial text stays
   useEffect(() => {
-    if (!transcript) return;
+    if (isMuted) {
+      resetTranscript();
+    }
+  }, [transcript, isMuted, resetTranscript]);
+
+  useEffect(() => {
+    // 3. Prevent processing if muted or empty
+    if (!transcript || isMuted) return;
+
     const timer = setTimeout(() => {
       const newEntry: TranscriptEntry = {
         text: transcript,
@@ -31,7 +41,7 @@ export function LiveTranscription({ onLineComplete }: { onLineComplete: (t: stri
       resetTranscript();
     }, 1500);
     return () => clearTimeout(timer);
-  }, [transcript]);
+  }, [transcript, isMuted]); 
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -57,10 +67,10 @@ export function LiveTranscription({ onLineComplete }: { onLineComplete: (t: stri
         <span className="panel-title text-cyan-400 text-glow-cyan">
           Real-Time Intel
         </span>
-        <div className="flex gap-0.5">
-          <span className="w-1 h-1 rounded-full bg-slate-600" />
-          <span className="w-1 h-1 rounded-full bg-slate-600" />
-          <span className="w-1 h-1 rounded-full bg-slate-600" />
+        <div className={`flex items-center gap-2 px-2 py-0.5 rounded border text-[9px] font-black uppercase tracking-wider ${
+          isMuted ? "bg-red-500/10 border-red-500/30 text-red-500" : "bg-cyan-500/10 border-cyan-500/30 text-cyan-400"
+        }`}>
+          {isMuted ? "MIC BLOCKED (OPR)" : "LISTENING"}
         </div>
       </div>
 
@@ -74,11 +84,13 @@ export function LiveTranscription({ onLineComplete }: { onLineComplete: (t: stri
           {[...Array(60)].map((_, i) => (
             <div
               key={i}
-              className={`w-[3px] bg-amber-500/80 rounded-sm transition-all ${listening ? 'waveform-bar' : ''}`}
+              className={`w-[3px] rounded-sm transition-all ${
+                isMuted ? "bg-red-500/20" : "bg-amber-500/80" 
+              } ${listening && !isMuted ? 'waveform-bar' : ''}`}
               style={{ 
-                height: listening ? `${Math.random() * 100}%` : '20%',
+                height: listening && !isMuted ? `${Math.random() * 100}%` : '20%',
                 animationDelay: `${i * 0.02}s`,
-                opacity: listening ? 0.9 : 0.3
+                opacity: listening && !isMuted ? 0.9 : 0.3
               }}
             />
           ))}
@@ -100,8 +112,18 @@ export function LiveTranscription({ onLineComplete }: { onLineComplete: (t: stri
           );
         })}
 
-        {/* Live Buffer */}
-        {transcript && (
+        {/* Operator Speaking Indicator */}
+        {isMuted && (
+           <div className="flex items-start gap-3 opacity-60">
+             <span className="text-[10px] text-red-500 font-mono mt-1 shrink-0 animate-pulse">OPR</span>
+             <div className="flex-1 p-2 rounded border border-dashed border-red-500/30 text-xs text-red-400 font-mono uppercase tracking-widest text-center">
+               // OPERATOR OVERRIDE ACTIVE //
+             </div>
+           </div>
+        )}
+
+        {/* Live Buffer (Only show if NOT muted) */}
+        {transcript && !isMuted && (
           <div className="flex items-start gap-3">
             <span className="text-[10px] text-cyan-500 font-mono mt-1 shrink-0 animate-pulse">LIVE</span>
             <span className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold shrink-0 bg-cyan-500/20 text-cyan-400">
