@@ -1,3 +1,12 @@
+<div align="center">
+  
+  ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat&logo=react&logoColor=white)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat&logo=typescript&logoColor=white)
+  ![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=flat&logo=vite&logoColor=white)
+  ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+</div>
+
+
 # ResQ-Desk 🚨
 
 > **Real-time Emergency Response Management System**  
@@ -7,6 +16,8 @@
   <img src="./public/dashboard.png" alt="My Project Screenshot" width="800">
   <br/>
   
+---
+  
   ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat&logo=react&logoColor=white)
   ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat&logo=typescript&logoColor=white)
   ![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=flat&logo=vite&logoColor=white)
@@ -14,29 +25,28 @@
 </div>
 
 ---
-
----
-
+<div align="center">
+  
 ### 🌐 Full Stack Application
 
 <table>
 <tr>
 <td align="center">
 <a href="https://github.com/sanjayrohith/ResQ-Desk">
-<img src="https://img.shields.io/badge/🖥️_Frontend-ResQ--Desk-blue?style=for-the-badge" alt="Frontend Repo"/>
+<img src="https://img.shields.io/badge/🖥️_Backend-ResQ--Desk-blue?style=for-the-badge" alt="Frontend Repo"/>
 </a>
 <br/>
-<sub><b>User Interface & Dashboard</b></sub>
+<sub><b>AI Engine & API Server</b></sub>
 </td>
 <td align="center">
-<img src="https://img.shields.io/badge/⚙️_Backend-This_Repo-green?style=for-the-badge" alt="Backend Repo"/>
+<img src="https://img.shields.io/badge/⚙️_Frontend-This_Repo-green?style=for-the-badge" alt="Backend Repo"/>
 <br/>
-<sub><b>AI Engine & API Server</b></sub>
+<sub><b>User Interface & Dashboard</b></sub>
 </td>
 </tr>
 </table>
 
-👉 **Check out the Frontend:** [**ResQ-Desk**](https://github.com/sanjayrohith/ResQ-Desk) — *The visual command center for emergency response*
+👉 **Check out the Backend:** [**ResQ-Backend**](https://github.com/sanjayrohith/ResQ-Backend) — *The Backend command center for emergency response*
 
 ---
 
@@ -75,8 +85,8 @@
 </table>
 
 <br/>
+</div>
 
----
 
 ## 🎯 Problem Statement
 
