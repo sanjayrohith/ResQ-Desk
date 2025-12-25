@@ -15,31 +15,66 @@
 
 ---
 
-## 🚦 Command Center
+---
 
-> **Backend Relay**: Meet the brains behind the UI — [ResQ-Backend](https://github.com/sanjayrohith/ResQ-Backend) keeps every call synchronized with AI intelligence.
+### 🌐 Full Stack Application
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <strong>Sanjay Rohith</strong><br/>
-        <a href="https://github.com/sanjayrohith">@sanjayrohith</a><br/>
-        <sub>Vision & Systems</sub>
-      </td>
-      <td align="center">
-        <strong>Sanjay E</strong><br/>
-        <a href="https://github.com/sanjayy0612">@sanjayy0612</a><br/>
-        <sub>Data & AI Ops</sub>
-      </td>
-      <td align="center">
-        <strong>Abishek Raj</strong><br/>
-        <a href="https://github.com/AbishekRaj2007">@AbishekRaj2007</a><br/>
-        <sub>UX Flow Architect</sub>
-      </td>
-    </tr>
-  </table>
-</div>
+<table>
+<tr>
+<td align="center">
+<a href="https://github.com/sanjayrohith/ResQ-Desk">
+<img src="https://img.shields.io/badge/🖥️_Frontend-ResQ--Desk-blue?style=for-the-badge" alt="Frontend Repo"/>
+</a>
+<br/>
+<sub><b>User Interface & Dashboard</b></sub>
+</td>
+<td align="center">
+<img src="https://img.shields.io/badge/⚙️_Backend-This_Repo-green?style=for-the-badge" alt="Backend Repo"/>
+<br/>
+<sub><b>AI Engine & API Server</b></sub>
+</td>
+</tr>
+</table>
+
+👉 **Check out the Frontend:** [**ResQ-Desk**](https://github.com/sanjayrohith/ResQ-Desk) — *The visual command center for emergency response*
+
+---
+
+### 👥 Meet The Team
+
+<table>
+<tr>
+<td align="center">
+<a href="https://github.com/sanjayrohith">
+<img src="https://github.com/sanjayrohith.png" width="100px;" alt="Sanjay Rohith" style="border-radius:50%"/>
+<br />
+<sub><b>Sanjay Rohith</b></sub>
+</a>
+<br />
+<a href="https://github.com/sanjayrohith" title="GitHub">💻</a>
+</td>
+<td align="center">
+<a href="https://github.com/sanjayy0612">
+<img src="https://github.com/sanjayy0612.png" width="100px;" alt="Sanjay E" style="border-radius:50%"/>
+<br />
+<sub><b>Sanjay E</b></sub>
+</a>
+<br />
+<a href="https://github.com/sanjayy0612" title="GitHub">💻</a>
+</td>
+<td align="center">
+<a href="https://github.com/AbishekRaj2007">
+<img src="https://github.com/AbishekRaj2007.png" width="100px;" alt="Abishek Raj" style="border-radius:50%"/>
+<br />
+<sub><b>Abishek Raj</b></sub>
+</a>
+<br />
+<a href="https://github.com/AbishekRaj2007" title="GitHub">💻</a>
+</td>
+</tr>
+</table>
+
+<br/>
 
 ---
 
