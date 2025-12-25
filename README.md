@@ -15,6 +15,34 @@
 
 ---
 
+## 🚦 Command Center
+
+> **Backend Relay**: Meet the brains behind the UI — [ResQ-Backend](https://github.com/sanjayrohith/ResQ-Backend) keeps every call synchronized with AI intelligence.
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <strong>Sanjay Rohith</strong><br/>
+        <a href="https://github.com/sanjayrohith">@sanjayrohith</a><br/>
+        <sub>Vision & Systems</sub>
+      </td>
+      <td align="center">
+        <strong>Sanjay E</strong><br/>
+        <a href="https://github.com/sanjayy0612">@sanjayy0612</a><br/>
+        <sub>UX Flow Architect</sub>
+      </td>
+      <td align="center">
+        <strong>Abishek Raj</strong><br/>
+        <a href="https://github.com/AbishekRaj2007">@AbishekRaj2007</a><br/>
+        <sub>Data & AI Ops</sub>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## 🎯 Problem Statement
 
 Emergency dispatchers face critical challenges:
