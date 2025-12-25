@@ -30,12 +30,12 @@
       <td align="center">
         <strong>Sanjay E</strong><br/>
         <a href="https://github.com/sanjayy0612">@sanjayy0612</a><br/>
-        <sub>UX Flow Architect</sub>
+        <sub>Data & AI Ops</sub>
       </td>
       <td align="center">
         <strong>Abishek Raj</strong><br/>
         <a href="https://github.com/AbishekRaj2007">@AbishekRaj2007</a><br/>
-        <sub>Data & AI Ops</sub>
+        <sub>UX Flow Architect</sub>
       </td>
     </tr>
   </table>
