@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, Activity, MessageSquare, Zap } from "lucide-react";
 import "regenerator-runtime/runtime";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
@@ -49,48 +49,66 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
     }
   }, [history]);
 
-  const getTypeStyles = (type: TranscriptEntry["type"]) => {
+  const getTypeConfig = (type: TranscriptEntry["type"]) => {
     switch (type) {
       case "caller":
-        return { badge: "bg-slate-700 text-slate-300", text: "text-slate-300" };
+        return { 
+          badge: "bg-slate-700/50 text-slate-300 border-slate-600/50", 
+          text: "text-slate-200",
+          icon: MessageSquare
+        };
       case "system":
-        return { badge: "bg-cyan-500/20 text-cyan-400", text: "text-cyan-400" };
+        return { 
+          badge: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30", 
+          text: "text-cyan-300",
+          icon: Zap
+        };
       case "operator":
-        return { badge: "bg-amber-500/20 text-amber-400", text: "text-slate-300" };
+        return { 
+          badge: "bg-amber-500/20 text-amber-400 border-amber-500/30", 
+          text: "text-slate-200",
+          icon: MessageSquare
+        };
     }
   };
 
   return (
-    <div className="floating-card floating-card-cyan flex flex-col h-full">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="panel-header">
-        <span className="panel-title text-cyan-400 text-glow-cyan">
-          Real-Time Intel
-        </span>
-        <div className={`flex items-center gap-2 px-2 py-0.5 rounded border text-[9px] font-black uppercase tracking-wider ${
-          isMuted ? "bg-red-500/10 border-red-500/30 text-red-500" : "bg-cyan-500/10 border-cyan-500/30 text-cyan-400"
-        }`}>
-          {isMuted ? "MIC BLOCKED (OPR)" : "LISTENING"}
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-cyan-500/20">
+            <Activity className="w-4 h-4 text-cyan-400" />
+          </div>
+          <span className="panel-title text-cyan-400">LIVE INTEL</span>
+        </div>
+        <div className={`status-badge ${isMuted ? 'status-critical' : 'status-live'}`}>
+          <div className={`w-1.5 h-1.5 rounded-full ${isMuted ? 'bg-red-400' : 'bg-cyan-400 live-dot'}`} />
+          {isMuted ? "BLOCKED" : "LISTENING"}
         </div>
       </div>
 
       {/* Audio Waveform Visualization */}
-      <div className="px-4 py-3 border-b border-[#1a2835]/50" style={{ background: 'linear-gradient(180deg, rgba(8,12,18,0.8) 0%, rgba(6,10,14,0.9) 100%)' }}>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[9px] text-amber-500 uppercase tracking-wider font-bold">Audio Input Signal</span>
-          <span className="text-[9px] text-slate-500">CH-01 ACTIVE</span>
+      <div className="px-5 py-4 border-b border-slate-700/30 bg-slate-900/30">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold flex items-center gap-2">
+            <div className={`w-1.5 h-1.5 rounded-full ${listening && !isMuted ? 'bg-amber-400 animate-pulse' : 'bg-slate-600'}`} />
+            AUDIO SIGNAL
+          </span>
+          <span className="text-[10px] text-slate-500 font-mono">CH-01</span>
         </div>
-        <div className="h-12 flex items-center justify-center gap-[2px] overflow-hidden">
-          {[...Array(60)].map((_, i) => (
+        <div className="h-14 flex items-center justify-center gap-[3px] overflow-hidden rounded-xl bg-slate-900/50 px-4">
+          {[...Array(50)].map((_, i) => (
             <div
               key={i}
-              className={`w-[3px] rounded-sm transition-all ${
-                isMuted ? "bg-red-500/20" : "bg-amber-500/80" 
-              } ${listening && !isMuted ? 'waveform-bar' : ''}`}
+              className={`w-1 rounded-full transition-all duration-150 ${
+                isMuted ? "bg-red-500/30" : listening ? "bg-gradient-to-t from-cyan-500 to-cyan-300" : "bg-slate-700"
+              }`}
               style={{ 
-                height: listening && !isMuted ? `${Math.random() * 100}%` : '20%',
-                animationDelay: `${i * 0.02}s`,
-                opacity: listening && !isMuted ? 0.9 : 0.3
+                height: listening && !isMuted ? `${20 + Math.random() * 80}%` : '20%',
+                animationDelay: `${i * 0.03}s`,
+                opacity: listening && !isMuted ? 0.8 + Math.random() * 0.2 : 0.3,
+                transition: listening ? 'height 0.1s ease' : 'height 0.3s ease'
               }}
             />
           ))}
@@ -98,47 +116,48 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
       </div>
 
       {/* Transcript Log */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-tactical">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-tactical">
         {history.map((entry, i) => {
-          const styles = getTypeStyles(entry.type);
+          const config = getTypeConfig(entry.type);
           return (
-            <div key={i} className="flex items-start gap-3">
-              <span className="text-[10px] text-slate-600 font-mono mt-1 shrink-0">{entry.time}</span>
-              <span className={`text-[9px] px-1.5 py-0.5 rounded uppercase font-bold shrink-0 ${styles.badge}`}>
+            <div key={i} className="transcript-entry group">
+              <span className="text-[10px] text-slate-600 font-mono shrink-0 w-16">{entry.time}</span>
+              <span className={`transcript-badge ${config.badge} border`}>
                 {entry.type}
               </span>
-              <p className={`text-sm leading-relaxed ${styles.text}`}>{entry.text}</p>
+              <p className={`text-sm leading-relaxed ${config.text}`}>{entry.text}</p>
             </div>
           );
         })}
 
         {/* Operator Speaking Indicator */}
         {isMuted && (
-           <div className="flex items-start gap-3 opacity-60">
-             <span className="text-[10px] text-red-500 font-mono mt-1 shrink-0 animate-pulse">OPR</span>
-             <div className="flex-1 p-2 rounded border border-dashed border-red-500/30 text-xs text-red-400 font-mono uppercase tracking-widest text-center">
-               // OPERATOR OVERRIDE ACTIVE //
-             </div>
-           </div>
+          <div className="mx-4 my-3 p-4 rounded-xl bg-red-500/10 border border-dashed border-red-500/30 text-center">
+            <div className="flex items-center justify-center gap-2 text-red-400">
+              <MicOff className="w-4 h-4" />
+              <span className="text-xs font-semibold uppercase tracking-wider">OPERATOR OVERRIDE ACTIVE</span>
+            </div>
+            <p className="text-[10px] text-red-400/60 mt-1">Caller audio temporarily muted</p>
+          </div>
         )}
 
         {/* Live Buffer (Only show if NOT muted) */}
         {transcript && !isMuted && (
-          <div className="flex items-start gap-3">
-            <span className="text-[10px] text-cyan-500 font-mono mt-1 shrink-0 animate-pulse">LIVE</span>
-            <span className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold shrink-0 bg-cyan-500/20 text-cyan-400">
+          <div className="transcript-entry bg-cyan-500/5 border border-cyan-500/20 rounded-xl animate-pulse">
+            <span className="text-[10px] text-cyan-400 font-mono shrink-0 w-16 animate-pulse">LIVE</span>
+            <span className="transcript-badge bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
               caller
             </span>
-            <p className="text-sm leading-relaxed text-cyan-300 italic">
+            <p className="text-sm leading-relaxed text-cyan-200 italic">
               {transcript}
-              <span className="inline-block w-0.5 h-4 bg-cyan-400 ml-1 animate-pulse" />
+              <span className="inline-block w-0.5 h-4 bg-cyan-400 ml-1 animate-pulse align-middle" />
             </p>
           </div>
         )}
       </div>
 
       {/* Controls */}
-      <div className="p-3 border-t border-[#1a2835]/50" style={{ background: 'linear-gradient(180deg, rgba(8,12,18,0.9) 0%, rgba(6,10,14,1) 100%)' }}>
+      <div className="p-4 border-t border-slate-700/30 bg-slate-900/30">
         <button
           onClick={() => {
             if (listening) {
@@ -147,16 +166,24 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
               SpeechRecognition.startListening({ continuous: true });
             }
           }}
-          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded border transition-all ${
+          className={`w-full flex items-center justify-center gap-3 py-3 rounded-xl font-semibold text-sm transition-all ${
             listening 
-              ? "bg-red-500/10 border-red-500/30 text-red-400" 
-              : "bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20"
+              ? "bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20" 
+              : "bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20"
           }`}
         >
-          {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          <span className="text-[11px] font-bold uppercase tracking-wider">
-            {listening ? "Stop Recording" : "Start Recording"}
-          </span>
+          {listening ? (
+            <>
+              <MicOff className="w-4 h-4" />
+              <span>STOP RECORDING</span>
+              <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+            </>
+          ) : (
+            <>
+              <Mic className="w-4 h-4" />
+              <span>START RECORDING</span>
+            </>
+          )}
         </button>
       </div>
     </div>

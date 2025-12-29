@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { Activity, Shield, Clock, Wifi, Users, AlertTriangle } from "lucide-react";
 
 export function Header() {
   const [time, setTime] = useState(new Date());
+  const [latency] = useState(24);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -18,65 +20,90 @@ export function Header() {
   };
 
   const formatDate = (date: Date) => {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-    const year = date.getFullYear();
-    const offset = date.getTimezoneOffset();
-    const offsetHours = Math.abs(Math.floor(offset / 60));
-    const offsetMins = Math.abs(offset % 60);
-    const offsetSign = offset <= 0 ? '+' : '-';
-    const tz = `UTC${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMins.toString().padStart(2, '0')}`;
-    return `${day} ${month} ${year} // ${tz}`;
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    }).toUpperCase();
   };
 
   return (
-    <header className="relative flex items-center justify-between px-6 py-3 bg-gradient-to-b from-[#0c1118] to-[#080c12] border-b border-[#1a2835]/60" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), 0 0 60px -20px rgba(0,212,255,0.1)' }}>
+    <header className="relative flex items-center justify-between px-6 py-4 bg-slate-900/40 backdrop-blur-xl border-b border-slate-700/50">
+      {/* Gradient Line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+      
       {/* Left: Brand */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3">
-          {/* Logo Icon */}
-          <div className="flex items-center justify-center w-9 h-9">
-            <img 
-              src="/favicon.svg" 
-              alt="RESQDESK Logo" 
-              className="w-8 h-8"
-            />
+      <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4">
+          {/* Logo */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
+            <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
           </div>
 
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-white">
-              RESQ<span className="text-cyan-400">DESK</span>
+            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+              RESQ<span className="gradient-text-cyan">DESK</span>
+              <span className="px-2 py-0.5 text-[9px] font-bold bg-cyan-500/20 text-cyan-400 rounded-full border border-cyan-500/30">
+                v2.0
+              </span>
             </h1>
-            <p className="text-[9px] text-slate-500 uppercase tracking-[0.15em] -mt-0.5">
-              DISASTER MANAGEMENT SYSTEM
+            <p className="text-[10px] text-slate-500 font-medium tracking-wider">
+              EMERGENCY RESPONSE SYSTEM
             </p>
           </div>
         </div>
       </div>
 
       {/* Center: System Status */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-400">SYSTEM:ONLINE</span>
+      <div className="flex items-center gap-3">
+        {/* System Online */}
+        <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+          <div className="relative">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 live-dot" />
+          </div>
+          <span className="text-xs font-semibold text-emerald-400">SYSTEM ONLINE</span>
         </div>
         
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span>LATENCY: <span className="text-cyan-400">24ms</span></span>
+        {/* Latency */}
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 border border-slate-700/50">
+          <Wifi className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="text-xs text-slate-400">
+            <span className="font-semibold text-cyan-400 number-ticker">{latency}ms</span>
+          </span>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-400">
+        {/* Active Units */}
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 border border-slate-700/50">
+          <Users className="w-3.5 h-3.5 text-amber-400" />
+          <span className="text-xs text-slate-400">
+            Active: <span className="font-semibold text-amber-400 number-ticker">03</span>
+          </span>
+        </div>
 
-          <span>ACTIVE: <span className="text-amber-400">03</span></span>
+        {/* Priority Alerts */}
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20">
+          <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+          <span className="text-xs font-semibold text-red-400 number-ticker">0</span>
+          <span className="text-xs text-red-400/70">ALERTS</span>
         </div>
       </div>
 
       {/* Right: Time */}
-      <div className="text-right">
-        <div className="text-2xl font-bold font-mono text-white tracking-wider tabular-nums">
-          {formatTime(time)}
-        </div>
-        <div className="text-[10px] text-slate-500 tracking-wide">
-          {formatDate(time)}
+      <div className="flex items-center gap-5">
+        <div className="text-right">
+          <div className="flex items-center gap-2 justify-end mb-1">
+            <Clock className="w-4 h-4 text-slate-500" />
+            <span className="text-[10px] text-slate-500 font-medium tracking-wider">
+              {formatDate(time)}
+            </span>
+          </div>
+          <div className="text-3xl font-bold font-mono text-white tracking-wider number-ticker text-glow-cyan">
+            {formatTime(time)}
+          </div>
         </div>
       </div>
     </header>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Flame, Map as MapIcon, Layers, Zap } from "lucide-react";
+import { Flame, Map as MapIcon, Layers, Navigation, Truck, Shield, Heart, Clock, AlertCircle } from "lucide-react";
 
 interface MapPanelProps {
   severity: string;
@@ -7,7 +7,7 @@ interface MapPanelProps {
 }
 
 export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
-  const [selectedUnit, setSelectedUnit] = useState<string>("A12");
+  const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [pulse, setPulse] = useState(false);
 
   useEffect(() => {
@@ -16,93 +16,191 @@ export function MapPanel({ severity, isDataComplete }: MapPanelProps) {
   }, []);
 
   const units = [
-    { id: "A12", type: "AMB", eta: "6m", x: 65, y: 40, color: "bg-cyan-500", text: "text-cyan-400" },
-    { id: "F07", type: "FIRE", eta: "12m", x: 80, y: 70, color: "bg-orange-500", text: "text-orange-500" },
-    { id: "P04", type: "POL", eta: "4m", x: 30, y: 60, color: "bg-emerald-500", text: "text-emerald-500" },
-    { id: "R03", type: "RES", eta: "9m", x: 20, y: 30, color: "bg-purple-500", text: "text-purple-500" },
+    { id: "A12", type: "AMB", label: "Ambulance", eta: "6m", x: 65, y: 40, color: "bg-cyan-500", text: "text-cyan-400", icon: Heart },
+    { id: "F07", type: "FIRE", label: "Fire Unit", eta: "12m", x: 80, y: 70, color: "bg-orange-500", text: "text-orange-400", icon: Flame },
+    { id: "P04", type: "POL", label: "Police", eta: "4m", x: 30, y: 60, color: "bg-emerald-500", text: "text-emerald-400", icon: Shield },
+    { id: "R03", type: "RES", label: "Rescue", eta: "9m", x: 20, y: 30, color: "bg-purple-500", text: "text-purple-400", icon: Truck },
   ];
 
+  const isCritical = severity?.toLowerCase() === "critical";
+
   return (
-    // BG Transparent for glass effect
-    <div className="flex flex-col h-full bg-transparent relative overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       
-      <div className="panel-header border-b border-white/5 p-3 flex justify-between items-center z-20 bg-black/20 backdrop-blur">
-        <span className="text-[10px] font-black text-cyan-400 tracking-widest uppercase flex items-center gap-2">
-          <MapIcon className="w-3 h-3" /> Live Geospatial Grid
-        </span>
+      {/* Header */}
+      <div className="panel-header">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/5 border border-white/10">
-            <Layers className="w-2.5 h-2.5 text-zinc-400" />
-            <span className="text-[8px] text-zinc-300 font-bold">LAYER: HEATMAP</span>
+          <div className="p-1.5 rounded-lg bg-cyan-500/20">
+            <MapIcon className="w-4 h-4 text-cyan-400" />
           </div>
-          <span className="text-[9px] text-zinc-500 font-mono">SEC-03</span>
+          <span className="panel-title text-cyan-400">TACTICAL MAP</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-cyan-500/30 transition-all">
+            <Layers className="w-3 h-3 text-slate-400" />
+            <span className="text-[10px] text-slate-300 font-medium">LAYERS</span>
+          </button>
         </div>
       </div>
 
-      <div className="relative flex-1 bg-[#09090b] overflow-hidden group">
+      {/* Map Container */}
+      <div className="relative flex-1 bg-slate-950 overflow-hidden">
         
-        {/* MAP BACKGROUND */}
+        {/* Map Tiles Background */}
         <div 
-          className="absolute inset-0 opacity-40 grayscale contrast-125"
+          className="absolute inset-0 opacity-50"
           style={{
             backgroundImage: `url('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/14/11756/7483.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'brightness(0.7) contrast(1.2)'
+            filter: 'brightness(0.6) saturate(0.8)'
           }}
         />
+
+        {/* Grid Overlay */}
+        <div className="absolute inset-0 tactical-grid opacity-30 pointer-events-none" />
         
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+        {/* Vignette Effect */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-transparent to-slate-950/80 pointer-events-none" />
 
         {/* INCIDENT ZONE */}
         {isDataComplete && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-0 h-0">
-             <div 
-                className={`absolute w-96 h-96 rounded-full blur-[80px] transition-all duration-1000 ${pulse ? "opacity-30 scale-105" : "opacity-20 scale-100"}`}
-                style={{ background: 'radial-gradient(circle, rgba(239,68,68,0.6) 0%, rgba(245,158,11,0.3) 40%, transparent 70%)' }}
-             />
-             <div className="absolute w-32 h-32 border border-red-500/30 rounded-full animate-[ping_3s_linear_infinite]" />
-             <div className="absolute w-32 h-32 border border-red-500/20 rounded-full animate-[ping_3s_linear_infinite_1s]" />
-             <div className="absolute w-24 h-24 border border-red-500/40 border-t-transparent border-l-transparent rounded-full animate-spin" />
-             
-             <div className="relative z-20 flex flex-col items-center">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-red-600 blur-xl opacity-80 animate-pulse"></div>
-                  <Flame className="w-8 h-8 text-white relative z-10 drop-shadow-[0_0_15px_rgba(239,68,68,1)]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            {/* Danger Zone Rings */}
+            <div className={`absolute -inset-32 rounded-full transition-opacity duration-500 ${pulse ? 'opacity-40' : 'opacity-20'}`}
+              style={{ 
+                background: isCritical 
+                  ? 'radial-gradient(circle, rgba(239,68,68,0.4) 0%, rgba(239,68,68,0.1) 40%, transparent 70%)'
+                  : 'radial-gradient(circle, rgba(245,158,11,0.3) 0%, rgba(245,158,11,0.1) 40%, transparent 70%)'
+              }}
+            />
+            
+            {/* Animated Rings */}
+            <div className={`absolute -inset-20 border rounded-full animate-ping opacity-20 ${isCritical ? 'border-red-500' : 'border-amber-500'}`} 
+              style={{ animationDuration: '3s' }}
+            />
+            <div className={`absolute -inset-16 border rounded-full animate-ping opacity-30 ${isCritical ? 'border-red-500' : 'border-amber-500'}`}
+              style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}
+            />
+            
+            {/* Spinning Ring */}
+            <div className={`absolute -inset-12 border-2 border-dashed rounded-full animate-spin ${isCritical ? 'border-red-500/40' : 'border-amber-500/40'}`}
+              style={{ animationDuration: '10s' }}
+            />
+            
+            {/* Center Marker */}
+            <div className="relative flex flex-col items-center">
+              <div className={`relative p-3 rounded-2xl ${isCritical ? 'bg-red-500/20' : 'bg-amber-500/20'} backdrop-blur-sm border ${isCritical ? 'border-red-500/50' : 'border-amber-500/50'}`}>
+                <div className={`absolute inset-0 rounded-2xl ${isCritical ? 'bg-red-500' : 'bg-amber-500'} blur-xl opacity-50 animate-pulse`} />
+                <Flame className={`w-8 h-8 relative z-10 ${isCritical ? 'text-red-400' : 'text-amber-400'}`} />
+              </div>
+              
+              {/* Label */}
+              <div className={`absolute top-full mt-2 px-3 py-1.5 rounded-lg backdrop-blur-sm whitespace-nowrap ${
+                isCritical 
+                  ? 'bg-red-500/20 border border-red-500/30' 
+                  : 'bg-amber-500/20 border border-amber-500/30'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <AlertCircle className={`w-3 h-3 ${isCritical ? 'text-red-400' : 'text-amber-400'}`} />
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${isCritical ? 'text-red-400' : 'text-amber-400'}`}>
+                    {isCritical ? 'CRITICAL ZONE' : 'INCIDENT ZONE'}
+                  </span>
                 </div>
-                <div className="absolute top-10 bg-black/80 backdrop-blur border border-red-500/50 px-2 py-0.5 rounded text-[8px] font-black text-red-500 uppercase tracking-widest whitespace-nowrap">
-                   Thermal Spike
-                </div>
-             </div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* UNITS */}
-        {units.map((unit) => (
-          <button
-            key={unit.id}
-            className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500 group/marker z-20`}
-            style={{ left: `${unit.x}%`, top: `${unit.y}%` }}
-          >
-            <div className={`w-3 h-3 rounded-full shadow-[0_0_10px_black] border border-white/20 relative z-10 transition-transform hover:scale-125 ${unit.color}`} />
-            <div className={`absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap transition-all`}>
-              <div className="bg-black/80 backdrop-blur-[2px] px-1.5 py-0.5 rounded border border-white/10 flex flex-col items-center">
-                <span className={`text-[8px] font-bold leading-none mb-0.5 ${unit.text}`}>{unit.id}</span>
-                <span className="text-[7px] text-zinc-400 font-mono leading-none">{unit.eta}</span>
+        {/* UNIT MARKERS */}
+        {units.map((unit) => {
+          const UnitIcon = unit.icon;
+          const isSelected = selectedUnit === unit.id;
+          
+          return (
+            <button
+              key={unit.id}
+              onClick={() => setSelectedUnit(isSelected ? null : unit.id)}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20 group"
+              style={{ left: `${unit.x}%`, top: `${unit.y}%` }}
+            >
+              {/* Marker Glow */}
+              <div className={`absolute inset-0 rounded-full blur-md opacity-50 transition-all ${unit.color} ${isSelected ? 'scale-150' : 'scale-100'}`} />
+              
+              {/* Marker Dot */}
+              <div className={`relative w-4 h-4 rounded-full border-2 border-white/50 shadow-lg transition-all duration-300 ${unit.color} ${isSelected ? 'scale-125' : 'group-hover:scale-110'}`}>
+                {/* Pulse effect for selected */}
+                {isSelected && (
+                  <div className={`absolute inset-0 rounded-full ${unit.color} animate-ping opacity-40`} />
+                )}
               </div>
-            </div>
-          </button>
-        ))}
+              
+              {/* Info Card */}
+              <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 transition-all duration-200 ${isSelected ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0'}`}>
+                <div className="bg-slate-900/95 backdrop-blur-sm rounded-xl border border-slate-700/50 p-3 shadow-xl min-w-[120px]">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`p-1.5 rounded-lg ${unit.color}/20`}>
+                      <UnitIcon className={`w-3.5 h-3.5 ${unit.text}`} />
+                    </div>
+                    <div>
+                      <div className={`text-xs font-bold ${unit.text}`}>{unit.id}</div>
+                      <div className="text-[9px] text-slate-500">{unit.label}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
+                    <span className="text-[9px] text-slate-500 uppercase">ETA</span>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-slate-400" />
+                      <span className="text-xs font-bold text-white">{unit.eta}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+
+        {/* Compass */}
+        <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 flex items-center justify-center">
+          <Navigation className="w-5 h-5 text-slate-400" />
+        </div>
       </div>
       
-      {/* Footer */}
-      <div className="p-3 bg-black/40 border-t border-white/5 z-20 shrink-0">
+      {/* Footer - Unit Legend */}
+      <div className="p-4 bg-slate-900/50 border-t border-slate-700/30">
         <div className="flex items-center justify-between mb-3">
-           <div className="flex items-center gap-2">
-             <Zap className="w-3 h-3 text-amber-400" />
-             <span className="text-[9px] font-bold text-zinc-300 uppercase">Live Tracking Active</span>
-           </div>
-           {isDataComplete && <span className="text-[9px] font-black text-red-500 animate-pulse">HAZARD DETECTED</span>}
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-cyan-400 live-dot" />
+            <span className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">Live Tracking</span>
+          </div>
+          {isDataComplete && (
+            <div className="flex items-center gap-2 text-red-400">
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span className="text-[10px] font-bold uppercase tracking-wider animate-pulse">Incident Active</span>
+            </div>
+          )}
+        </div>
+        
+        {/* Unit Pills */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {units.map((unit) => {
+            const UnitIcon = unit.icon;
+            return (
+              <button
+                key={unit.id}
+                onClick={() => setSelectedUnit(selectedUnit === unit.id ? null : unit.id)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all shrink-0 ${
+                  selectedUnit === unit.id 
+                    ? `${unit.color}/20 border border-current/30 ${unit.text}` 
+                    : 'bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:border-slate-600'
+                }`}
+              >
+                <UnitIcon className="w-3.5 h-3.5" />
+                <span className="text-xs font-semibold">{unit.id}</span>
+                <span className="text-[10px] opacity-60">{unit.eta}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

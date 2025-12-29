@@ -66,20 +66,31 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#050505] overflow-hidden font-mono text-zinc-100 relative selection:bg-cyan-500/30">
+    <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-950">
       
-      {/* 1. CRT SCANLINES (Texture) */}
-      <div className="scanlines fixed inset-0 pointer-events-none z-50"></div>
+      {/* Background Effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Base gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
+        
+        {/* Ambient glow */}
+        <div className={`absolute inset-0 transition-all duration-1000 ${
+          isCritical 
+            ? 'ambient-critical' 
+            : 'ambient-glow'
+        }`} />
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 tactical-grid opacity-20" />
+        
+        {/* Top light effect */}
+        <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
+      </div>
 
-      {/* 2. DYNAMIC AMBIENT GLOW (Reactivity) */}
-      <div 
-        className={`absolute inset-0 pointer-events-none transition-all duration-1000 z-0
-          ${isCritical 
-            ? "bg-[radial-gradient(circle_at_center,transparent_0%,rgba(220,38,38,0.25)_100%)] animate-pulse-red" 
-            : "bg-[radial-gradient(circle_at_center,transparent_0%,rgba(6,182,212,0.05)_100%)]"
-          }`} 
-      />
+      {/* Subtle Scanlines */}
+      <div className="scanlines" />
 
+      {/* Dispatch Popup */}
       {showPopup && (
         <DispatchPopup 
           data={incidentData} 
@@ -88,19 +99,23 @@ const Index = () => {
         />
       )}
 
+      {/* Header */}
       <div className="relative z-10">
         <Header />
       </div>
 
-      <main className="flex-1 grid grid-cols-12 gap-4 p-4 min-h-0 w-full relative z-10">
+      {/* Main Dashboard */}
+      <main className="flex-1 grid grid-cols-12 gap-5 p-5 min-h-0 w-full relative z-10">
         
-        {/* LEFT COLUMN */}
-        <div className="col-span-3 flex flex-col gap-4 min-w-0 h-full">
-          {/* We apply 'floating-card' HERE, not inside the components */}
-          <div className="flex-[0.4] floating-card">
+        {/* LEFT COLUMN - Communications */}
+        <div className="col-span-3 flex flex-col gap-5 min-w-0 h-full">
+          {/* Live Call Panel */}
+          <div className="h-[45%] panel panel-glow">
             <LiveCall onPTTChange={setIsOperatorSpeaking} />
           </div>
-          <div className="flex-1 min-h-0 floating-card">
+          
+          {/* Live Transcription Panel */}
+          <div className="flex-1 min-h-0 panel panel-glow">
             <LiveTranscription 
               onLineComplete={handleLineComplete} 
               isMuted={isOperatorSpeaking} 
@@ -108,8 +123,8 @@ const Index = () => {
           </div>
         </div>
 
-        {/* MIDDLE COLUMN */}
-        <div className="col-span-4 min-w-0 h-full floating-card">
+        {/* MIDDLE COLUMN - Incident Details */}
+        <div className="col-span-4 min-w-0 h-full panel panel-glow">
           <IncidentDetails 
             key={resetKey} 
             data={incidentData} 
@@ -117,14 +132,31 @@ const Index = () => {
           />
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="col-span-5 min-w-0 h-full floating-card">
+        {/* RIGHT COLUMN - Map */}
+        <div className={`col-span-5 min-w-0 h-full panel ${isCritical ? 'panel-critical' : 'panel-glow'}`}>
           <MapPanel 
             severity={incidentData.severity || "Normal"} 
             isDataComplete={incidentData.location !== "Awaiting data..."} 
           />
         </div>
       </main>
+      
+      {/* Bottom Status Bar */}
+      <div className="relative z-10 px-5 py-2 bg-slate-900/50 border-t border-slate-700/30 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 live-dot" />
+            <span className="text-[10px] text-slate-500">All systems operational</span>
+          </div>
+          <div className="h-3 w-px bg-slate-700" />
+          <span className="text-[10px] text-slate-500">WebSocket: Connected</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] text-slate-500">ResQ-Desk v2.0</span>
+          <div className="h-3 w-px bg-slate-700" />
+          <span className="text-[10px] text-slate-600">© 2024 ResQ Team</span>
+        </div>
+      </div>
     </div>
   );
 };
