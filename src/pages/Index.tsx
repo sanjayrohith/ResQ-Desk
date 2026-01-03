@@ -45,21 +45,30 @@ const Index = () => {
     setIsAnalyzing(true); 
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/analyze", {
+      // 👇 SAFETY FALLBACK: If VITE_API_URL is missing, use the hardcoded link.
+      const API_URL = import.meta.env.VITE_API_URL || "https://resq-backend-9585.onrender.com";
+
+      console.log("🚀 Sending audio data to:", `${API_URL}/analyze`);
+
+      const response = await fetch(`${API_URL}/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: transcript }),
       });
 
-      if (!response.ok) throw new Error("Backend connection failed");
+      if (!response.ok) {
+        throw new Error(`Server Error: ${response.status}`);
+      }
+
       const backendData = await response.json();
+      console.log("✅ Backend Replied:", backendData);
 
       if (backendData.incident_id) {
         setIncidentData(backendData); 
         setTimeout(() => setShowPopup(true), 4000); 
       }
     } catch (error) {
-      console.error("Sync Error:", error);
+      console.error("❌ Sync Error:", error);
     } finally {
       setIsAnalyzing(false); 
     }
