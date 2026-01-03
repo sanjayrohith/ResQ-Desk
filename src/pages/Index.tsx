@@ -30,7 +30,6 @@ const Index = () => {
   const [isOperatorSpeaking, setIsOperatorSpeaking] = useState(false);
   const [resetKey, setResetKey] = useState(0);
 
-  // Critical Alert Logic for Red Background
   const isCritical = incidentData.severity?.toLowerCase() === "critical";
 
   const resetDashboard = () => {
@@ -45,9 +44,7 @@ const Index = () => {
     setIsAnalyzing(true); 
 
     try {
-      // 👇 SAFETY FALLBACK: If VITE_API_URL is missing, use the hardcoded link.
       const API_URL = import.meta.env.VITE_API_URL || "https://resq-backend-9585.onrender.com";
-
       console.log("🚀 Sending audio data to:", `${API_URL}/analyze`);
 
       const response = await fetch(`${API_URL}/analyze`, {
@@ -56,9 +53,7 @@ const Index = () => {
         body: JSON.stringify({ text: transcript }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server Error: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Server Error: ${response.status}`);
 
       const backendData = await response.json();
       console.log("✅ Backend Replied:", backendData);
@@ -75,29 +70,18 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-950">
+    // FIX 1: h-screen and overflow-hidden prevent the whole page from scrolling
+    <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-950 text-slate-200">
       
       {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        {/* Base gradient */}
+      <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
-        
-        {/* Ambient glow */}
-        <div className={`absolute inset-0 transition-all duration-1000 ${
-          isCritical 
-            ? 'ambient-critical' 
-            : 'ambient-glow'
-        }`} />
-        
-        {/* Grid pattern */}
+        <div className={`absolute inset-0 transition-all duration-1000 ${isCritical ? 'ambient-critical' : 'ambient-glow'}`} />
         <div className="absolute inset-0 tactical-grid opacity-20" />
-        
-        {/* Top light effect */}
         <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
       </div>
 
-      {/* Subtle Scanlines */}
-      <div className="scanlines" />
+      <div className="scanlines z-0" />
 
       {/* Dispatch Popup */}
       {showPopup && (
@@ -108,23 +92,25 @@ const Index = () => {
         />
       )}
 
-      {/* Header */}
-      <div className="relative z-10">
+      {/* Header - Fixed Height */}
+      <div className="relative z-10 shrink-0">
         <Header />
       </div>
 
-      {/* Main Dashboard */}
-      <main className="flex-1 grid grid-cols-12 gap-5 p-5 min-h-0 w-full relative z-10">
+      {/* Main Dashboard - Takes Remaining Height */}
+      {/* FIX 2: min-h-0 is crucial for Grid to respect parent height */}
+      <main className="flex-1 grid grid-cols-12 gap-4 p-4 min-h-0 w-full relative z-10">
         
         {/* LEFT COLUMN - Communications */}
-        <div className="col-span-3 flex flex-col gap-5 min-w-0 h-full">
-          {/* Live Call Panel */}
-          <div className="h-[45%] panel panel-glow">
+        <div className="col-span-3 flex flex-col gap-4 h-full min-h-0">
+          {/* Live Call Panel (Fixed 40% height) */}
+          <div className="h-[50%] panel panel-glow relative overflow-hidden">
             <LiveCall onPTTChange={setIsOperatorSpeaking} />
           </div>
           
-          {/* Live Transcription Panel */}
-          <div className="flex-1 min-h-0 panel panel-glow">
+          {/* Live Transcription Panel (Flex Grow fills rest) */}
+          {/* FIX 3: Wrapper needs h-full or flex-1 to pass height down */}
+          <div className="flex-1 panel panel-glow relative overflow-hidden min-h-0">
             <LiveTranscription 
               onLineComplete={handleLineComplete} 
               isMuted={isOperatorSpeaking} 
@@ -133,7 +119,7 @@ const Index = () => {
         </div>
 
         {/* MIDDLE COLUMN - Incident Details */}
-        <div className="col-span-4 min-w-0 h-full panel panel-glow">
+        <div className="col-span-4 h-full panel panel-glow relative overflow-hidden">
           <IncidentDetails 
             key={resetKey} 
             data={incidentData} 
@@ -142,7 +128,7 @@ const Index = () => {
         </div>
 
         {/* RIGHT COLUMN - Map */}
-        <div className={`col-span-5 min-w-0 h-full panel ${isCritical ? 'panel-critical' : 'panel-glow'}`}>
+        <div className={`col-span-5 h-full panel relative overflow-hidden ${isCritical ? 'panel-critical' : 'panel-glow'}`}>
           <MapPanel 
             severity={incidentData.severity || "Normal"} 
             isDataComplete={incidentData.location !== "Awaiting data..."} 
@@ -150,20 +136,20 @@ const Index = () => {
         </div>
       </main>
       
-      {/* Bottom Status Bar */}
-      <div className="relative z-10 px-5 py-2 bg-slate-900/50 border-t border-slate-700/30 flex items-center justify-between">
+      {/* Bottom Status Bar - Fixed Height */}
+      <div className="relative z-10 shrink-0 px-5 py-2 bg-slate-900/50 border-t border-slate-700/30 flex items-center justify-between text-[10px] backdrop-blur-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 live-dot" />
-            <span className="text-[10px] text-slate-500">All systems operational</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 live-dot" />
+            <span className="text-slate-400 font-mono tracking-wide">SYSTEM OPERATIONAL</span>
           </div>
           <div className="h-3 w-px bg-slate-700" />
-          <span className="text-[10px] text-slate-500">WebSocket: Connected</span>
+          <span className="text-slate-500 font-mono">WS_LINK: ESTABLISHED</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-[10px] text-slate-500">ResQ-Desk v2.0</span>
+          <span className="text-slate-500 font-mono">ResQ-Desk v2.0 (HACKATHON BUILD)</span>
           <div className="h-3 w-px bg-slate-700" />
-          <span className="text-[10px] text-slate-600">© 2024 ResQ Team</span>
+          <span className="text-slate-600">© 2024 ResQ Team</span>
         </div>
       </div>
     </div>
