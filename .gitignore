@@ -1,6 +1,7 @@
-# Secrets
+# Environment variables
 .env
-.env.*
+.env.local
+.env.production
 
 # Logs
 logs

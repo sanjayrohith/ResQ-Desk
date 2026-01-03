@@ -9,25 +9,25 @@ interface TranscriptEntry {
   type: "caller" | "system" | "operator";
 }
 
-// 1. Accept 'isMuted' prop
 export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete: (t: string) => void, isMuted: boolean }) {
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
+  
+  // Initial dummy data for demo
   const [history, setHistory] = useState<TranscriptEntry[]>([
     { text: "There's smoke coming from the second floor...", time: "10:42:15", type: "caller" },
     { text: "Keywords detected: SMOKE, FIRE, TRAPPED", time: "10:42:22", type: "system" },
     { text: "Please confirm your location, ma'am.", time: "10:42:28", type: "operator" },
   ]);
+  
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 2. Clear transcript immediately if muted so no partial text stays
+  // 1. Clear transcript if muted
   useEffect(() => {
-    if (isMuted) {
-      resetTranscript();
-    }
-  }, [transcript, isMuted, resetTranscript]);
+    if (isMuted) resetTranscript();
+  }, [isMuted, resetTranscript]);
 
+  // 2. Processing logic
   useEffect(() => {
-    // 3. Prevent processing if muted or empty
     if (!transcript || isMuted) return;
 
     const timer = setTimeout(() => {
@@ -41,41 +41,32 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
       resetTranscript();
     }, 1500);
     return () => clearTimeout(timer);
-  }, [transcript, isMuted]); 
+  }, [transcript, isMuted, onLineComplete, resetTranscript]); 
 
+  // 3. Auto-scroll to bottom whenever history changes
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [history]);
+  }, [history, transcript]); // Added transcript so it scrolls while typing too
 
   const getTypeConfig = (type: TranscriptEntry["type"]) => {
     switch (type) {
       case "caller":
-        return { 
-          badge: "bg-slate-700/50 text-slate-300 border-slate-600/50", 
-          text: "text-slate-200",
-          icon: MessageSquare
-        };
+        return { badge: "bg-slate-700/50 text-slate-300 border-slate-600/50", text: "text-slate-200" };
       case "system":
-        return { 
-          badge: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30", 
-          text: "text-cyan-300",
-          icon: Zap
-        };
+        return { badge: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30", text: "text-cyan-300" };
       case "operator":
-        return { 
-          badge: "bg-amber-500/20 text-amber-400 border-amber-500/30", 
-          text: "text-slate-200",
-          icon: MessageSquare
-        };
+        return { badge: "bg-amber-500/20 text-amber-400 border-amber-500/30", text: "text-slate-200" };
     }
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="panel-header">
+    // FIX 1: overflow-hidden ensures the main container never scrolls, forcing children to handle it
+    <div className="flex flex-col h-full overflow-hidden relative">
+      
+      {/* --- HEADER (Fixed) --- */}
+      <div className="panel-header shrink-0">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-cyan-500/20">
             <Activity className="w-4 h-4 text-cyan-400" />
@@ -88,8 +79,8 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
         </div>
       </div>
 
-      {/* Audio Waveform Visualization */}
-      <div className="px-5 py-4 border-b border-slate-700/30 bg-slate-900/30">
+      {/* --- WAVEFORM (Fixed) --- */}
+      <div className="px-5 py-4 border-b border-slate-700/30 bg-slate-900/30 shrink-0">
         <div className="flex items-center justify-between mb-3">
           <span className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold flex items-center gap-2">
             <div className={`w-1.5 h-1.5 rounded-full ${listening && !isMuted ? 'bg-amber-400 animate-pulse' : 'bg-slate-600'}`} />
@@ -115,24 +106,27 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
         </div>
       </div>
 
-      {/* Transcript Log */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-tactical">
+      {/* --- TRANSCRIPT LOG (Scrollable Area) --- */}
+      {/* FIX 2: min-h-0 is crucial for nested flex scrolling! */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-tactical min-h-0">
         {history.map((entry, i) => {
           const config = getTypeConfig(entry.type);
           return (
-            <div key={i} className="transcript-entry group">
-              <span className="text-[10px] text-slate-600 font-mono shrink-0 w-16">{entry.time}</span>
-              <span className={`transcript-badge ${config.badge} border`}>
-                {entry.type}
-              </span>
-              <p className={`text-sm leading-relaxed ${config.text}`}>{entry.text}</p>
+            <div key={i} className="transcript-entry group animate-in slide-in-from-left-2 fade-in duration-300">
+              <span className="text-[10px] text-slate-600 font-mono shrink-0 w-16 pt-1">{entry.time}</span>
+              <div className="flex-1">
+                 <span className={`inline-block text-[9px] px-1.5 py-0.5 rounded mb-1 border uppercase tracking-wider font-bold ${config.badge}`}>
+                  {entry.type}
+                </span>
+                <p className={`text-sm leading-relaxed ${config.text}`}>{entry.text}</p>
+              </div>
             </div>
           );
         })}
 
-        {/* Operator Speaking Indicator */}
+        {/* Operator Warning */}
         {isMuted && (
-          <div className="mx-4 my-3 p-4 rounded-xl bg-red-500/10 border border-dashed border-red-500/30 text-center">
+          <div className="mx-4 my-3 p-4 rounded-xl bg-red-500/10 border border-dashed border-red-500/30 text-center shrink-0">
             <div className="flex items-center justify-center gap-2 text-red-400">
               <MicOff className="w-4 h-4" />
               <span className="text-xs font-semibold uppercase tracking-wider">OPERATOR OVERRIDE ACTIVE</span>
@@ -141,23 +135,26 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
           </div>
         )}
 
-        {/* Live Buffer (Only show if NOT muted) */}
+        {/* Live Typing Buffer */}
         {transcript && !isMuted && (
           <div className="transcript-entry bg-cyan-500/5 border border-cyan-500/20 rounded-xl animate-pulse">
             <span className="text-[10px] text-cyan-400 font-mono shrink-0 w-16 animate-pulse">LIVE</span>
-            <span className="transcript-badge bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              caller
-            </span>
-            <p className="text-sm leading-relaxed text-cyan-200 italic">
-              {transcript}
-              <span className="inline-block w-0.5 h-4 bg-cyan-400 ml-1 animate-pulse align-middle" />
-            </p>
+            <div className="flex-1">
+              <span className="inline-block text-[9px] px-1.5 py-0.5 rounded mb-1 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 uppercase tracking-wider font-bold">
+                Listening...
+              </span>
+              <p className="text-sm leading-relaxed text-cyan-200 italic">
+                {transcript}
+                <span className="inline-block w-1.5 h-3 bg-cyan-400 ml-1 animate-pulse" />
+              </p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Controls */}
-      <div className="p-4 border-t border-slate-700/30 bg-slate-900/30">
+      {/* --- CONTROLS (Fixed Footer) --- */}
+      {/* FIX 3: shrink-0 ensures this never gets pushed out */}
+      <div className="p-4 border-t border-slate-700/30 bg-slate-900/30 shrink-0 z-10">
         <button
           onClick={() => {
             if (listening) {
@@ -166,7 +163,7 @@ export function LiveTranscription({ onLineComplete, isMuted }: { onLineComplete:
               SpeechRecognition.startListening({ continuous: true });
             }
           }}
-          className={`w-full flex items-center justify-center gap-3 py-3 rounded-xl font-semibold text-sm transition-all ${
+          className={`w-full flex items-center justify-center gap-3 py-3 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
             listening 
               ? "bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20" 
               : "bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20"
