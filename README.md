@@ -80,7 +80,7 @@
 <br/><br/>
 <strong>Sanjay E</strong>
 <br/>
-<sub>🎨 Frontend Architect</sub>
+<sub>🧠 AI & Backend</sub>
 <br/><br/>
 <img src="https://img.shields.io/badge/-@sanjayy0612-181717?style=flat-square&logo=github" alt="GitHub"/>
 </a>
@@ -91,7 +91,7 @@
 <br/><br/>
 <strong>Abishek Raj</strong>
 <br/>
-<sub>🧠 AI & Backend</sub>
+<sub>🎨 Frontend Architect</sub>
 <br/><br/>
 <img src="https://img.shields.io/badge/-@AbishekRaj2007-181717?style=flat-square&logo=github" alt="GitHub"/>
 </a>
