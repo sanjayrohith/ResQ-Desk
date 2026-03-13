@@ -1,7 +1,13 @@
 # Environment variables
 .env
 .env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.staging
 .env.production
+.env.production.local
 
 # Logs
 logs
@@ -12,18 +18,48 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 dist-ssr
-*.local
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Package manager lockfiles (project uses pnpm — ignore others)
+package-lock.json
+yarn.lock
+bun.lockb
+
+# Cache
+.cache
+.parcel-cache
+.vite
+
+# Test coverage
+coverage
+*.lcov
+
+# Deployment
+.vercel
+.netlify
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Misc
+*.local
