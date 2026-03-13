@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Activity, Shield, Clock, Wifi, Users, AlertTriangle } from "lucide-react";
+import { Activity, Clock, Wifi, Users, AlertTriangle } from "lucide-react";
 
 export function Header() {
   const [time, setTime] = useState(new Date());
@@ -39,9 +39,7 @@ export function Header() {
           {/* Logo */}
           <div className="relative">
             <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
-            <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
+            <img src="/logo.png" alt="ResQ Desk" className="relative w-11 h-11 object-contain" />
           </div>
 
           <div>
