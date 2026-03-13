@@ -131,7 +131,8 @@ const Index = () => {
         <div className={`col-span-5 h-full panel relative overflow-hidden ${isCritical ? 'panel-critical' : 'panel-glow'}`}>
           <MapPanel 
             severity={incidentData.severity || "Normal"} 
-            isDataComplete={incidentData.location !== "Awaiting data..."} 
+            isDataComplete={incidentData.location !== "Awaiting data..."}
+            location={incidentData.location}
           />
         </div>
       </main>
