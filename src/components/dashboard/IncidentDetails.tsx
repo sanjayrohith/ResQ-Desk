@@ -150,16 +150,37 @@ export function IncidentDetails({ data, isLoading }: IncidentDetailsProps) {
             </label>
             <div className="data-cell flex flex-col items-center justify-center py-5">
               {isLoading ? (
-                <div className="w-16 h-16 rounded-full border-4 border-slate-700/50 border-t-cyan-500 animate-spin" />
+                <svg className="w-16 h-16 animate-spin" viewBox="0 0 64 64">
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="28"
+                    stroke="currentColor"
+                    strokeWidth="5"
+                    fill="none"
+                    className="text-slate-700"
+                  />
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="28"
+                    stroke="currentColor"
+                    strokeWidth="5"
+                    fill="none"
+                    strokeDasharray="44 132"
+                    strokeLinecap="round"
+                    className="text-cyan-500"
+                  />
+                </svg>
               ) : (
                 <>
                   {/* Circular Progress */}
                   <div className="relative w-20 h-20 mb-2">
-                    <svg className="w-full h-full -rotate-90">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
                       <circle
                         cx="40"
                         cy="40"
-                        r="36"
+                        r="32"
                         stroke="currentColor"
                         strokeWidth="6"
                         fill="none"
@@ -168,11 +189,11 @@ export function IncidentDetails({ data, isLoading }: IncidentDetailsProps) {
                       <circle
                         cx="40"
                         cy="40"
-                        r="36"
+                        r="32"
                         stroke="currentColor"
                         strokeWidth="6"
                         fill="none"
-                        strokeDasharray={`${confidencePercent * 2.26} 226`}
+                        strokeDasharray={`${(confidencePercent / 100) * 201.06} 201.06`}
                         strokeLinecap="round"
                         className={`transition-all duration-1000 ${hasData ? 'text-cyan-400' : 'text-slate-700'}`}
                       />
