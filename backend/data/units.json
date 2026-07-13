@@ -1,0 +1,44 @@
+[
+  {
+    "unit_id": "Ambulance A12",
+    "vehicle_type": "AMBULANCE",
+    "distance_km": 2.3,
+    "eta_minutes": 6,
+    "status": "AVAILABLE"
+  },
+  {
+    "unit_id": "Ambulance A122",
+    "vehicle_type": "AMBULANCE",
+    "distance_km": 33,
+    "eta_minutes": 45,
+    "status": "AVAILABLE"
+  },
+  {
+    "unit_id": "Rescue Boat B7",
+    "vehicle_type": "RESCUE_BOAT",
+    "distance_km": 4.1,
+    "eta_minutes": 10,
+    "status": "BUSY"
+  },
+  {
+    "unit_id": "Rescue Boat B6",
+    "vehicle_type": "RESCUE_BOAT",
+    "distance_km": 10,
+    "eta_minutes": 31,
+    "status": "AVAILABLE"
+  },
+  {
+    "unit_id": "Fire Engine FE12",
+    "vehicle_type": "FIRE_ENGINE",
+    "distance_km": 2.3,
+    "eta_minutes": 4,
+    "status": "AVAILABLE"
+  },
+  {
+    "unit_id": "Fire Engine FE13",
+    "vehicle_type": "FIRE_ENGINE",
+    "distance_km": 5,
+    "eta_minutes": 15,
+    "status": "AVAILABLE"
+  }
+]

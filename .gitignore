@@ -1,65 +1,84 @@
-# Environment variables
+# =========================
+# Environment Variables
+# =========================
 .env
-.env.local
-.env.development
-.env.development.local
-.env.test
-.env.test.local
-.env.staging
-.env.production
-.env.production.local
+.env.*
+!.env.example
 
+# =========================
+# Node.js / Frontend
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/coverage/
+frontend/*.lcov
+frontend/*.tsbuildinfo
+
+# Package manager lockfiles (keep pnpm only)
+frontend/package-lock.json
+frontend/yarn.lock
+frontend/bun.lockb
+
+# =========================
+# Python / Backend
+# =========================
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/htmlcov/
+backend/coverage.xml
+
+# Python virtual environments
+backend/.venv/
+backend/venv/
+backend/ENV/
+
+# Python secrets
+backend/*.pem
+
+# =========================
+# Deployment
+# =========================
+frontend/.vercel/
+frontend/.netlify/
+
+# =========================
 # Logs
-logs
+# =========================
 *.log
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependencies
-node_modules
-
-# Build outputs
-dist
-dist-ssr
-
-# TypeScript incremental build info
-*.tsbuildinfo
-
-# Package manager lockfiles (project uses pnpm — ignore others)
-package-lock.json
-yarn.lock
-bun.lockb
-
-# Cache
-.cache
-.parcel-cache
-.vite
-
-# Test coverage
-coverage
-*.lcov
-
-# Deployment
-.vercel
-.netlify
-
-# Editor directories and files
+# =========================
+# IDEs
+# =========================
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# OS files
+# =========================
+# OS Files
+# =========================
 .DS_Store
 Thumbs.db
 Desktop.ini
 
+# =========================
 # Misc
+# =========================
 *.local
