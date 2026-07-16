@@ -1,7 +1,8 @@
+import os
 import requests
 
-BOT_TOKEN = "8595727693:AAH7ElOWvr54-grvapco2z16-6Mj_rtLC5Y"
-VOLUNTEER_CHAT_ID = "1940917226"
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+VOLUNTEER_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
 def send_telegram_alert(incident):
     message = f"""
