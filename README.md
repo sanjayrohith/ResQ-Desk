@@ -162,7 +162,7 @@ Emergency dispatchers are the **unsung heroes** operating under extreme pressure
 | 🎙️ **Live Call Management** | 🧠 **AI Intelligence** | 📋 **Auto Reports** | 🗺️ **Tactical Maps** |
 |:--:|:--:|:--:|:--:|
 | Push-to-talk interface | Real-time NLP analysis | Zero-touch form filling | Live unit tracking |
-| Audio visualization | Smart data extraction | Severity classification | Route optimization |
+| Audio visualization | Smart data extraction | Severity classification | Auto-reallocation |
 | Language detection | Keyword detection | AI reasoning display | Multi-unit coordination |
 | Encrypted channels | Confidence scoring | Tactical alerts | ETA calculations |
 
@@ -194,6 +194,44 @@ Emergency dispatchers are the **unsung heroes** operating under extreme pressure
 | 🔥 Type | FIRE | `98%` |
 | ⚠️ Severity | **CRITICAL** | `91%` |
 | 🏷️ Keywords | `FIRE` `SMOKE` `TRAPPED` | — |
+
+<br/>
+
+### 🗺️ Live Unit Tracking & Auto-Reallocation
+> *Real-time fleet awareness with priority-based reallocation*
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🗺️  LIVE FLEET                              4/6 AVAILABLE   │
+├─────────────────────────────────────────────────────────────┤
+│  🚑 A12   Ambulance     🟢 AVAILABLE           ETA   6m     │
+│  🚒 FE12  Fire Engine   🟠 ON SCENE  (Normal)  ETA   4m     │
+│  🚒 FE13  Fire Engine   🟠 ON SCENE  (Normal)  ETA  15m     │
+│  🚤 B6    Rescue Boat   🟢 AVAILABLE           ETA  31m     │
+├─────────────────────────────────────────────────────────────┤
+│  ⚠️  CRITICAL FIRE — no free Fire Engine                     │
+│  🔁 REALLOCATE  FE12   (Normal ➜ Critical)      [ CONFIRM ]  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Every unit carries a **live lifecycle status** that updates on the tactical map in real time:
+
+<div align="center">
+
+| Status | Meaning | Marker |
+|:------:|:--------|:------:|
+| 🟢 **AVAILABLE** | Idle, ready to dispatch | Green |
+| 🔵 **EN ROUTE** | Assigned, travelling to the incident | Cyan *(pulsing)* |
+| 🟠 **ON SCENE** | Arrived, working the incident | Amber |
+| ⚪ **RETURNING** | Job done, heading back to base | Slate |
+
+</div>
+
+```
+    AVAILABLE  ➜  EN ROUTE  ➜  ON SCENE  ➜  RETURNING  ➜  AVAILABLE
+```
+
+When a **Critical** incident arrives and every capable unit is busy, the orchestrator doesn't just report "none available" — it **finds a unit on a lower-priority job and proposes pulling it off**. The dispatcher gets a one-click confirmation, and the reassigned unit immediately begins moving toward the new scene on the map.
 
 <br/>
 
@@ -374,7 +412,62 @@ POST http://127.0.0.1:8000/analyze
   "keywords": ["FIRE", "SMOKE", "TRAPPED"],
   "reasoning": "Multiple fire indicators detected with potential victims",
   "confidence_score": 0.94,
-  "suggested_unit": "F07"
+  "suggested_unit": "F07",
+  "reallocation": null
+}
+```
+
+</details>
+
+<details>
+<summary><b>🚒 Live Unit Tracking & Reallocation</b></summary>
+
+### Endpoints
+```
+GET  http://127.0.0.1:8000/units                 # Live state of every unit
+POST http://127.0.0.1:8000/units/{id}/status     # Advance lifecycle status
+POST http://127.0.0.1:8000/units/reallocate      # Confirm a reallocation
+POST http://127.0.0.1:8000/units/reset           # Reset the sim roster
+```
+
+### Live Unit State (`GET /units`)
+```json
+[
+  {
+    "unit_id": "Fire Engine FE12",
+    "vehicle_type": "FIRE_ENGINE",
+    "lat": 40.7201,
+    "lng": -73.996,
+    "distance_km": 2.3,
+    "eta_minutes": 4,
+    "status": "ON_SCENE",
+    "assigned_incident": "RESQ-SEED3",
+    "assigned_severity": "Normal"
+  }
+]
+```
+
+### Reallocation Suggestion
+When no unit is free, `/analyze` returns a `reallocation` block instead of `null`:
+```json
+{
+  "reallocation": {
+    "unit_id": "Fire Engine FE12",
+    "from_incident": "RESQ-SEED3",
+    "from_severity": "Normal",
+    "to_severity": "Critical",
+    "eta_minutes": 4,
+    "message": "No Fire Engine available. FE12 is on a Normal-priority job and can be reallocated to this Critical incident (4 mins ETA)."
+  }
+}
+```
+
+### Confirm Reallocation (`POST /units/reallocate`)
+```json
+{
+  "unit_id": "Fire Engine FE12",
+  "incident_id": "RESQ-A1B2",
+  "severity": "Critical"
 }
 ```
 
@@ -446,7 +539,8 @@ POST http://127.0.0.1:8000/analyze
     ✅ Auto-form filling          ⬜ CAD integration
     ✅ Tactical map               ⬜ Mobile app
     ✅ Unit dispatch              ⬜ Voice biometrics
-                                  ⬜ Predictive ML
+    ✅ Live unit tracking         ⬜ Predictive ML
+    ✅ Auto-reallocation
 ```
 
 </div>
