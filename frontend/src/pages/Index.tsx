@@ -2,6 +2,15 @@ import { useState } from "react";
 import { Header, LiveCall, LiveTranscription, IncidentDetails, MapPanel } from "@/components/dashboard";
 import { DispatchPopup } from "@/components/dashboard/DispatchPopup";
 
+export interface ReallocationSuggestion {
+  unit_id: string;
+  from_incident?: string | null;
+  from_severity?: string | null;
+  to_severity?: string | null;
+  eta_minutes?: number | null;
+  message: string;
+}
+
 export interface IncidentData {
   incident_id?: string;
   location: string;
@@ -11,6 +20,7 @@ export interface IncidentData {
   reasoning: string;
   confidence_score: number;
   suggested_unit?: string;
+  reallocation?: ReallocationSuggestion | null;
 }
 
 const getInitialState = (): IncidentData => ({

@@ -44,10 +44,26 @@ class AIAnalysis(BaseModel):
     reasoning: str
     confidence_score: float
 
+class ReallocationSuggestion(BaseModel):
+    """A proposal to pull a busy unit off a lower-priority incident.
+
+    Emitted when no AVAILABLE unit of the required capability exists but a higher
+    priority incident justifies reassigning one that is already committed.
+    """
+    unit_id: str
+    from_incident: Optional[str] = None
+    from_severity: Optional[str] = None
+    to_severity: Optional[str] = None
+    eta_minutes: Optional[int] = None
+    message: str
+
+
 class IncidentResponse(BaseModel):
     incident_id: str = Field(default_factory=lambda: f"RESQ-{uuid.uuid4().hex[:4].upper()}")
     analysis: AIAnalysis
     suggested_unit: Optional[str] = None
+    reallocation: Optional[ReallocationSuggestion] = None
+
 
 class FrontendResponse(BaseModel):
     incident_id: str
@@ -58,3 +74,30 @@ class FrontendResponse(BaseModel):
     confidence_score: float
     suggested_unit: Optional[str]
     keywords: List[str] = []
+    reallocation: Optional[ReallocationSuggestion] = None
+
+
+# ---------------------------------------------------------------------------
+# Live unit tracking models
+# ---------------------------------------------------------------------------
+
+class UnitState(BaseModel):
+    unit_id: str
+    vehicle_type: str
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    distance_km: Optional[float] = None
+    eta_minutes: Optional[int] = None
+    status: str
+    assigned_incident: Optional[str] = None
+    assigned_severity: Optional[str] = None
+
+
+class StatusUpdate(BaseModel):
+    status: str = Field(..., description="AVAILABLE | EN_ROUTE | ON_SCENE | RETURNING")
+
+
+class ReallocateRequest(BaseModel):
+    unit_id: str
+    incident_id: str
+    severity: Optional[str] = None

@@ -2,43 +2,67 @@
   {
     "unit_id": "Ambulance A12",
     "vehicle_type": "AMBULANCE",
+    "lat": 40.7208,
+    "lng": -73.994,
     "distance_km": 2.3,
     "eta_minutes": 6,
-    "status": "AVAILABLE"
+    "status": "AVAILABLE",
+    "assigned_incident": null,
+    "assigned_severity": null
   },
   {
     "unit_id": "Ambulance A122",
     "vehicle_type": "AMBULANCE",
+    "lat": 40.6905,
+    "lng": -74.031,
     "distance_km": 33,
     "eta_minutes": 45,
-    "status": "AVAILABLE"
+    "status": "ON_SCENE",
+    "assigned_incident": "RESQ-SEED1",
+    "assigned_severity": "Normal"
   },
   {
     "unit_id": "Rescue Boat B7",
     "vehicle_type": "RESCUE_BOAT",
+    "lat": 40.7061,
+    "lng": -73.988,
     "distance_km": 4.1,
     "eta_minutes": 10,
-    "status": "BUSY"
+    "status": "ON_SCENE",
+    "assigned_incident": "RESQ-SEED2",
+    "assigned_severity": "Normal"
   },
   {
     "unit_id": "Rescue Boat B6",
     "vehicle_type": "RESCUE_BOAT",
+    "lat": 40.7254,
+    "lng": -74.025,
     "distance_km": 10,
     "eta_minutes": 31,
-    "status": "AVAILABLE"
+    "status": "AVAILABLE",
+    "assigned_incident": null,
+    "assigned_severity": null
   },
   {
     "unit_id": "Fire Engine FE12",
     "vehicle_type": "FIRE_ENGINE",
+    "lat": 40.7201,
+    "lng": -73.996,
     "distance_km": 2.3,
     "eta_minutes": 4,
-    "status": "AVAILABLE"
+    "status": "ON_SCENE",
+    "assigned_incident": "RESQ-SEED3",
+    "assigned_severity": "Normal"
   },
   {
     "unit_id": "Fire Engine FE13",
     "vehicle_type": "FIRE_ENGINE",
+    "lat": 40.7003,
+    "lng": -74.021,
     "distance_km": 5,
     "eta_minutes": 15,
-    "status": "AVAILABLE"
+    "status": "ON_SCENE",
+    "assigned_incident": "RESQ-SEED4",
+    "assigned_severity": "Normal"
   }
 ]

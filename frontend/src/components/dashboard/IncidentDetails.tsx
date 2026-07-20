@@ -1,4 +1,4 @@
-import { MapPin, Activity, ShieldAlert, Brain, Target, Sparkles, TrendingUp, Tag } from "lucide-react";
+import { MapPin, Activity, ShieldAlert, Brain, Target, Sparkles, TrendingUp, Tag, Truck, Repeat } from "lucide-react";
 
 export interface IncidentData {
   location?: string;
@@ -7,6 +7,13 @@ export interface IncidentData {
   keywords?: string[];
   reasoning?: string;
   confidence_score?: number;
+  suggested_unit?: string;
+  reallocation?: {
+    unit_id: string;
+    from_incident?: string | null;
+    from_severity?: string | null;
+    message: string;
+  } | null;
 }
 
 interface IncidentDetailsProps {
