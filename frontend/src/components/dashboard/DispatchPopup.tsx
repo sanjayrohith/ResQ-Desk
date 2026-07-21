@@ -1,8 +1,24 @@
 import { useEffect, useState } from "react";
 import { Ambulance, CheckCircle2, MapPin, XCircle, AlertTriangle, Siren, Navigation, Clock, Zap, Repeat } from "lucide-react";
+import { useCountUp } from "@/hooks/useCountUp";
+
+interface DispatchData {
+  incident_id?: string;
+  location?: string;
+  severity?: string;
+  suggested_unit?: string;
+  reallocation?: {
+    unit_id: string;
+    from_incident?: string | null;
+    from_severity?: string | null;
+    to_severity?: string | null;
+    eta_minutes?: number | null;
+    message: string;
+  } | null;
+}
 
 interface DispatchPopupProps {
-  data: any;
+  data: DispatchData;
   onCancel: () => void;
   onComplete: () => void;
 }
@@ -21,10 +37,11 @@ export function DispatchPopup({ data, onCancel, onComplete }: DispatchPopupProps
   const displayUnit = isReallocation
     ? reallocation.unit_id
     : (data?.suggested_unit || "A12");
-  const displayEta =
+  const etaValue =
     isReallocation && reallocation.eta_minutes != null
-      ? `${reallocation.eta_minutes} MIN ETA`
-      : "6 MIN ETA";
+      ? reallocation.eta_minutes
+      : 6;
+  const animatedEta = Math.round(useCountUp(etaValue, 1000));
 
   // Auto-dispatch countdown ONLY for normal (non-reallocation) dispatches.
   useEffect(() => {
@@ -174,7 +191,7 @@ export function DispatchPopup({ data, onCancel, onComplete }: DispatchPopupProps
                           <span className="text-2xl font-bold text-white">{displayUnit}</span>
                           <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${isReallocation ? 'bg-amber-500/20 border-amber-500/30' : 'bg-cyan-500/20 border-cyan-500/30'}`}>
                             <Clock className={`w-3.5 h-3.5 ${isReallocation ? 'text-amber-400' : 'text-cyan-400'}`} />
-                            <span className={`text-xs font-semibold ${isReallocation ? 'text-amber-400' : 'text-cyan-400'}`}>{displayEta}</span>
+                            <span className={`text-xs font-semibold ${isReallocation ? 'text-amber-400' : 'text-cyan-400'}`}>{animatedEta} MIN ETA</span>
                           </div>
                         </div>
                       </div>

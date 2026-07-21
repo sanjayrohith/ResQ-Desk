@@ -683,4 +683,36 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
   }
+
+  /* === ODOMETER (rolling digits) === */
+  .odometer-digit {
+    display: inline-block;
+    height: 1em;
+    line-height: 1;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .odometer-track {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .odometer-cell {
+    height: 1em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .odometer-sep {
+    display: inline-flex;
+    height: 1em;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+  }
 }

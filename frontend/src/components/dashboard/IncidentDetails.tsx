@@ -1,4 +1,5 @@
 import { MapPin, Activity, ShieldAlert, Brain, Target, Sparkles, TrendingUp, Tag, Truck, Repeat } from "lucide-react";
+import { useCountUp } from "@/hooks/useCountUp";
 
 export interface IncidentData {
   location?: string;
@@ -62,6 +63,8 @@ export function IncidentDetails({ data, isLoading }: IncidentDetailsProps) {
     : "Normal";
   const severityStyle = severityConfig[safeSeverity] || severityConfig.Normal;
   const confidencePercent = hasData && data.confidence_score ? Math.round(data.confidence_score * 100) : 0;
+  const animatedConfidence = useCountUp(confidencePercent, 1200);
+  const displayConfidence = Math.round(animatedConfidence);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -200,14 +203,14 @@ export function IncidentDetails({ data, isLoading }: IncidentDetailsProps) {
                         stroke="currentColor"
                         strokeWidth="6"
                         fill="none"
-                        strokeDasharray={`${(confidencePercent / 100) * 201.06} 201.06`}
+                        strokeDasharray={`${(animatedConfidence / 100) * 201.06} 201.06`}
                         strokeLinecap="round"
-                        className={`transition-all duration-1000 ${hasData ? 'text-cyan-400' : 'text-slate-700'}`}
+                        className={`transition-all duration-300 ${hasData ? 'text-cyan-400' : 'text-slate-700'}`}
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className={`text-2xl font-bold number-ticker ${hasData ? 'text-cyan-400 text-glow-cyan' : 'text-slate-700'}`}>
-                        {confidencePercent}
+                        {displayConfidence}
                       </span>
                     </div>
                   </div>

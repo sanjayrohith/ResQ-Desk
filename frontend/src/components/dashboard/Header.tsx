@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Activity, Clock, Wifi, Users, AlertTriangle } from "lucide-react";
+import { Odometer } from "./Odometer";
 
 export function Header() {
   const [time, setTime] = useState(new Date());
@@ -100,7 +101,7 @@ export function Header() {
             </span>
           </div>
           <div className="text-3xl font-bold font-mono text-white tracking-wider number-ticker text-glow-cyan">
-            {formatTime(time)}
+            <Odometer value={formatTime(time)} />
           </div>
         </div>
       </div>
