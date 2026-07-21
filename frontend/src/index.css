@@ -6,36 +6,36 @@
 
 @layer base {
   :root {
-    /* --- RESQ TACTICAL PALETTE v2 --- */
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 6%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 187 100% 42%;
-    --primary-foreground: 222 47% 4%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 187 100% 42%;
-    --accent-foreground: 222 47% 4%;
+    /* --- RESQ PREMIUM BLACK PALETTE v3 --- */
+    --background: 40 8% 3%;
+    --foreground: 40 12% 96%;
+    --card: 40 7% 6%;
+    --card-foreground: 40 12% 96%;
+    --popover: 40 7% 6%;
+    --popover-foreground: 40 12% 96%;
+    --primary: 45 63% 52%;
+    --primary-foreground: 40 30% 6%;
+    --secondary: 40 5% 14%;
+    --secondary-foreground: 40 12% 96%;
+    --muted: 40 5% 14%;
+    --muted-foreground: 40 6% 58%;
+    --accent: 45 63% 52%;
+    --accent-foreground: 40 30% 6%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 187 100% 42%;
+    --border: 40 5% 15%;
+    --input: 40 5% 15%;
+    --ring: 45 63% 52%;
     --radius: 0.5rem;
     
     /* Custom Colors */
-    --resq-cyan: 187 100% 42%;
+    --resq-cyan: 45 63% 52%;
     --resq-red: 0 84% 60%;
     --resq-amber: 38 92% 50%;
     --resq-emerald: 160 84% 39%;
     --resq-purple: 270 70% 60%;
-    --resq-dark: 222 47% 4%;
-    --resq-panel: 222 47% 8%;
+    --resq-dark: 40 8% 3%;
+    --resq-panel: 40 7% 6%;
   }
 }
 
@@ -49,10 +49,10 @@
   body {
     @apply text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #030712;
+    background: #060605;
     background-image: 
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(14, 165, 233, 0.04), transparent);
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.06), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(212, 175, 55, 0.03), transparent);
   }
 
   /* Custom Scrollbar */
@@ -61,14 +61,14 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.3);
+    background: rgba(20, 19, 17, 0.4);
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(14, 165, 233, 0.3);
+    background: rgba(212, 175, 55, 0.3);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(14, 165, 233, 0.5);
+    background: rgba(212, 175, 55, 0.5);
   }
 }
 
@@ -78,17 +78,17 @@
     @apply relative overflow-hidden rounded-2xl;
     background: linear-gradient(
       135deg,
-      rgba(15, 23, 42, 0.9) 0%,
-      rgba(15, 23, 42, 0.7) 50%,
-      rgba(15, 23, 42, 0.8) 100%
+      rgba(18, 17, 15, 0.92) 0%,
+      rgba(14, 13, 12, 0.78) 50%,
+      rgba(18, 17, 15, 0.85) 100%
     );
-    backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    backdrop-filter: blur(20px) saturate(120%);
+    border: 1px solid rgba(212, 175, 55, 0.08);
     box-shadow: 
-      0 0 0 1px rgba(0, 0, 0, 0.3),
-      0 4px 6px -1px rgba(0, 0, 0, 0.2),
-      0 20px 25px -5px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      0 0 0 1px rgba(0, 0, 0, 0.5),
+      0 4px 6px -1px rgba(0, 0, 0, 0.4),
+      0 20px 25px -5px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 245, 220, 0.04);
   }
 
   .panel::before {
@@ -98,16 +98,16 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
   }
 
   .panel-glow {
     box-shadow: 
-      0 0 0 1px rgba(0, 0, 0, 0.3),
-      0 4px 6px -1px rgba(0, 0, 0, 0.2),
-      0 20px 25px -5px rgba(0, 0, 0, 0.3),
-      0 0 60px -15px rgba(14, 165, 233, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      0 0 0 1px rgba(0, 0, 0, 0.5),
+      0 4px 6px -1px rgba(0, 0, 0, 0.4),
+      0 20px 25px -5px rgba(0, 0, 0, 0.5),
+      0 0 60px -15px rgba(212, 175, 55, 0.14),
+      inset 0 1px 0 rgba(255, 245, 220, 0.04);
   }
 
   .panel-critical {
@@ -210,7 +210,7 @@
 
   .data-cell-active {
     @apply bg-slate-900/50 border-cyan-500/30;
-    box-shadow: 0 0 20px -5px rgba(14, 165, 233, 0.1);
+    box-shadow: 0 0 20px -5px rgba(212, 175, 55, 0.12);
   }
 
   .data-label {
@@ -297,7 +297,7 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(14, 165, 233, 0.03), transparent);
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(212, 175, 55, 0.04), transparent);
     z-index: 0;
   }
 
@@ -340,8 +340,8 @@
   /* === TEXT GLOWS === */
   .text-glow-cyan {
     text-shadow: 
-      0 0 10px rgba(14, 165, 233, 0.5),
-      0 0 40px rgba(14, 165, 233, 0.2);
+      0 0 10px rgba(212, 175, 55, 0.45),
+      0 0 40px rgba(212, 175, 55, 0.18);
   }
 
   .text-glow-red {
@@ -370,7 +370,7 @@
 
   .gradient-text-cyan {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+    background-image: linear-gradient(135deg, #e6cf8e 0%, #c39a2b 100%);
   }
 
   /* === ANIMATED BORDERS === */
@@ -386,10 +386,10 @@
     padding: 1px;
     background: linear-gradient(
       135deg,
-      rgba(14, 165, 233, 0.5),
+      rgba(212, 175, 55, 0.5),
       transparent 40%,
       transparent 60%,
-      rgba(14, 165, 233, 0.5)
+      rgba(212, 175, 55, 0.5)
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -486,15 +486,15 @@
   /* === TACTICAL GRID === */
   .tactical-grid {
     background-image: 
-      linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+      linear-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212, 175, 55, 0.04) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
   /* === CUSTOM SCROLLBAR === */
   .scrollbar-tactical {
     scrollbar-width: thin;
-    scrollbar-color: rgba(14, 165, 233, 0.3) transparent;
+    scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
   }
 
   .scrollbar-tactical::-webkit-scrollbar {
@@ -506,7 +506,7 @@
   }
 
   .scrollbar-tactical::-webkit-scrollbar-thumb {
-    background: rgba(14, 165, 233, 0.3);
+    background: rgba(212, 175, 55, 0.3);
     border-radius: 2px;
   }
 
@@ -532,21 +532,21 @@
   .aurora-cyan {
     top: -5%;
     left: -5%;
-    background: radial-gradient(circle, rgba(14, 165, 233, 0.55), transparent 62%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.30), transparent 62%);
     animation: aurora-1 20s ease-in-out infinite;
   }
 
   .aurora-purple {
     top: 10%;
     right: -10%;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.45), transparent 62%);
+    background: radial-gradient(circle, rgba(168, 120, 60, 0.26), transparent 62%);
     animation: aurora-2 26s ease-in-out infinite;
   }
 
   .aurora-emerald {
     bottom: -15%;
     left: 20%;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.4), transparent 62%);
+    background: radial-gradient(circle, rgba(235, 228, 208, 0.10), transparent 62%);
     animation: aurora-3 32s ease-in-out infinite;
   }
 
@@ -607,10 +607,10 @@
     background: conic-gradient(
       from var(--edge-angle, 0deg),
       transparent 0%,
-      rgba(14, 165, 233, 0.7) 15%,
+      rgba(212, 175, 55, 0.75) 15%,
       transparent 35%,
       transparent 65%,
-      rgba(14, 165, 233, 0.7) 85%,
+      rgba(212, 175, 55, 0.75) 85%,
       transparent 100%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);

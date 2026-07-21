@@ -14,6 +14,37 @@ export default {
     },
     extend: {
       colors: {
+        /* === PREMIUM BLACK THEME REMAP ===
+           `slate` (was blue-grey) -> warm neutral near-black.
+           `cyan`  (was the blue accent) -> refined champagne gold.
+           Remapping here retints every existing slate-/cyan- utility class
+           across the app without editing any component. */
+        slate: {
+          50: "#f6f6f5",
+          100: "#e9e9e7",
+          200: "#d4d3cf",
+          300: "#b1b0ab",
+          400: "#84837d",
+          500: "#605f59",
+          600: "#454440",
+          700: "#2a2a27",
+          800: "#1a1a18",
+          900: "#111110",
+          950: "#080807",
+        },
+        cyan: {
+          50: "#fbf8ef",
+          100: "#f6efd6",
+          200: "#ecdcac",
+          300: "#e0c87f",
+          400: "#d4af37",
+          500: "#c39a2b",
+          600: "#a07d22",
+          700: "#7c611c",
+          800: "#594718",
+          900: "#3c300f",
+          950: "#221b08",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
