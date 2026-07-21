@@ -13,23 +13,23 @@
     --card-foreground: 40 12% 96%;
     --popover: 40 7% 6%;
     --popover-foreground: 40 12% 96%;
-    --primary: 45 63% 52%;
-    --primary-foreground: 40 30% 6%;
+    --primary: 240 6% 80%;
+    --primary-foreground: 240 10% 8%;
     --secondary: 40 5% 14%;
     --secondary-foreground: 40 12% 96%;
     --muted: 40 5% 14%;
     --muted-foreground: 40 6% 58%;
-    --accent: 45 63% 52%;
-    --accent-foreground: 40 30% 6%;
+    --accent: 240 6% 80%;
+    --accent-foreground: 240 10% 8%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 40 5% 15%;
     --input: 40 5% 15%;
-    --ring: 45 63% 52%;
+    --ring: 240 6% 80%;
     --radius: 0.5rem;
     
     /* Custom Colors */
-    --resq-cyan: 45 63% 52%;
+    --resq-cyan: 240 6% 80%;
     --resq-red: 0 84% 60%;
     --resq-amber: 38 92% 50%;
     --resq-emerald: 160 84% 39%;
@@ -51,8 +51,8 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: #060605;
     background-image: 
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.06), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(212, 175, 55, 0.03), transparent);
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(226, 226, 232, 0.06), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(226, 226, 232, 0.03), transparent);
   }
 
   /* Custom Scrollbar */
@@ -64,11 +64,11 @@
     background: rgba(20, 19, 17, 0.4);
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.3);
+    background: rgba(226, 226, 232, 0.3);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(212, 175, 55, 0.5);
+    background: rgba(226, 226, 232, 0.5);
   }
 }
 
@@ -83,7 +83,7 @@
       rgba(18, 17, 15, 0.85) 100%
     );
     backdrop-filter: blur(20px) saturate(120%);
-    border: 1px solid rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(226, 226, 232, 0.08);
     box-shadow: 
       0 0 0 1px rgba(0, 0, 0, 0.5),
       0 4px 6px -1px rgba(0, 0, 0, 0.4),
@@ -98,7 +98,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(226, 226, 232, 0.4), transparent);
   }
 
   .panel-glow {
@@ -106,7 +106,7 @@
       0 0 0 1px rgba(0, 0, 0, 0.5),
       0 4px 6px -1px rgba(0, 0, 0, 0.4),
       0 20px 25px -5px rgba(0, 0, 0, 0.5),
-      0 0 60px -15px rgba(212, 175, 55, 0.14),
+      0 0 60px -15px rgba(226, 226, 232, 0.14),
       inset 0 1px 0 rgba(255, 245, 220, 0.04);
   }
 
@@ -210,7 +210,7 @@
 
   .data-cell-active {
     @apply bg-slate-900/50 border-cyan-500/30;
-    box-shadow: 0 0 20px -5px rgba(212, 175, 55, 0.12);
+    box-shadow: 0 0 20px -5px rgba(226, 226, 232, 0.12);
   }
 
   .data-label {
@@ -297,7 +297,7 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(212, 175, 55, 0.04), transparent);
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(226, 226, 232, 0.04), transparent);
     z-index: 0;
   }
 
@@ -340,8 +340,8 @@
   /* === TEXT GLOWS === */
   .text-glow-cyan {
     text-shadow: 
-      0 0 10px rgba(212, 175, 55, 0.45),
-      0 0 40px rgba(212, 175, 55, 0.18);
+      0 0 10px rgba(226, 226, 232, 0.45),
+      0 0 40px rgba(226, 226, 232, 0.18);
   }
 
   .text-glow-red {
@@ -370,7 +370,7 @@
 
   .gradient-text-cyan {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #e6cf8e 0%, #c39a2b 100%);
+    background-image: linear-gradient(135deg, #f4f4f6 0%, #a2a2ac 100%);
   }
 
   /* === ANIMATED BORDERS === */
@@ -386,10 +386,10 @@
     padding: 1px;
     background: linear-gradient(
       135deg,
-      rgba(212, 175, 55, 0.5),
+      rgba(226, 226, 232, 0.5),
       transparent 40%,
       transparent 60%,
-      rgba(212, 175, 55, 0.5)
+      rgba(226, 226, 232, 0.5)
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -486,15 +486,15 @@
   /* === TACTICAL GRID === */
   .tactical-grid {
     background-image: 
-      linear-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212, 175, 55, 0.04) 1px, transparent 1px);
+      linear-gradient(rgba(226, 226, 232, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(226, 226, 232, 0.04) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
   /* === CUSTOM SCROLLBAR === */
   .scrollbar-tactical {
     scrollbar-width: thin;
-    scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+    scrollbar-color: rgba(226, 226, 232, 0.3) transparent;
   }
 
   .scrollbar-tactical::-webkit-scrollbar {
@@ -506,7 +506,7 @@
   }
 
   .scrollbar-tactical::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.3);
+    background: rgba(226, 226, 232, 0.3);
     border-radius: 2px;
   }
 
@@ -532,21 +532,21 @@
   .aurora-cyan {
     top: -5%;
     left: -5%;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.30), transparent 62%);
+    background: radial-gradient(circle, rgba(226, 226, 232, 0.30), transparent 62%);
     animation: aurora-1 20s ease-in-out infinite;
   }
 
   .aurora-purple {
     top: 10%;
     right: -10%;
-    background: radial-gradient(circle, rgba(168, 120, 60, 0.26), transparent 62%);
+    background: radial-gradient(circle, rgba(180, 182, 190, 0.16), transparent 62%);
     animation: aurora-2 26s ease-in-out infinite;
   }
 
   .aurora-emerald {
     bottom: -15%;
     left: 20%;
-    background: radial-gradient(circle, rgba(235, 228, 208, 0.10), transparent 62%);
+    background: radial-gradient(circle, rgba(245, 245, 250, 0.10), transparent 62%);
     animation: aurora-3 32s ease-in-out infinite;
   }
 
@@ -607,10 +607,10 @@
     background: conic-gradient(
       from var(--edge-angle, 0deg),
       transparent 0%,
-      rgba(212, 175, 55, 0.75) 15%,
+      rgba(226, 226, 232, 0.75) 15%,
       transparent 35%,
       transparent 65%,
-      rgba(212, 175, 55, 0.75) 85%,
+      rgba(226, 226, 232, 0.75) 85%,
       transparent 100%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -682,6 +682,32 @@
   @keyframes float-slow {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
+  }
+
+  /* === REALLOCATION TRANSFER FLOW === */
+  .reflow-dot {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: reflow 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  @keyframes reflow {
+    0%   { left: -6%; opacity: 0; }
+    15%  { opacity: 1; }
+    85%  { opacity: 1; }
+    100% { left: 106%; opacity: 0; }
+  }
+
+  @keyframes dash-flow {
+    to { background-position: 24px 0; }
+  }
+
+  .reflow-track {
+    background-image: linear-gradient(90deg, currentColor 55%, transparent 55%);
+    background-size: 12px 2px;
+    background-repeat: repeat-x;
+    animation: dash-flow 0.8s linear infinite;
   }
 
   /* === ODOMETER (rolling digits) === */

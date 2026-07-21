@@ -30,7 +30,7 @@ const MAX_DISPLAY_KM = 8; // clamp far units so the scene stays framed
 const API_URL = import.meta.env.VITE_API_URL || "https://resq-backend-9585.onrender.com";
 
 const VEHICLE_CONFIG: Record<string, { color: string; icon: typeof Heart; label: string }> = {
-  AMBULANCE: { color: "#d4af37", icon: Heart, label: "Ambulance" },
+  AMBULANCE: { color: "#c2c2cb", icon: Heart, label: "Ambulance" },
   FIRE_ENGINE: { color: "#f97316", icon: Flame, label: "Fire Engine" },
   RESCUE_BOAT: { color: "#a855f7", icon: Ship, label: "Rescue Boat" },
 };
@@ -38,7 +38,7 @@ const DEFAULT_VEHICLE = { color: "#64748b", icon: Truck, label: "Unit" };
 
 const STATUS_CONFIG: Record<string, { color: string; label: string; pulse: boolean }> = {
   AVAILABLE: { color: "#10b981", label: "Available", pulse: false },
-  EN_ROUTE: { color: "#d4af37", label: "En Route", pulse: true },
+  EN_ROUTE: { color: "#c2c2cb", label: "En Route", pulse: true },
   ON_SCENE: { color: "#f59e0b", label: "On Scene", pulse: false },
   RETURNING: { color: "#64748b", label: "Returning", pulse: false },
 };
