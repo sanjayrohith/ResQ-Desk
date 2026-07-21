@@ -221,9 +221,9 @@ Every unit carries a **live lifecycle status** that updates on the tactical map 
 | Status | Meaning | Marker |
 |:------:|:--------|:------:|
 | 🟢 **AVAILABLE** | Idle, ready to dispatch | Green |
-| 🔵 **EN ROUTE** | Assigned, travelling to the incident | Cyan *(pulsing)* |
+| ⚪ **EN ROUTE** | Assigned, travelling to the incident | Platinum *(pulsing)* |
 | 🟠 **ON SCENE** | Arrived, working the incident | Amber |
-| ⚪ **RETURNING** | Job done, heading back to base | Slate |
+| ◻️ **RETURNING** | Job done, heading back to base | Slate |
 
 </div>
 
@@ -232,6 +232,17 @@ Every unit carries a **live lifecycle status** that updates on the tactical map 
 ```
 
 When a **Critical** incident arrives and every capable unit is busy, the orchestrator doesn't just report "none available" — it **finds a unit on a lower-priority job and proposes pulling it off**. The dispatcher gets a one-click confirmation, and the reassigned unit immediately begins moving toward the new scene on the map.
+
+<br/>
+
+### 🛰️ Intelligent Map — Wired to Real Data
+> *Every pixel means something — the map isn't decoration, it's the spatial source of truth*
+
+- **📍 Real geocoding** — the AI-extracted location is resolved to actual coordinates, so the incident marker lands on the *real* address (e.g. *Phoenix Marketcity, Chennai*), not a placeholder.
+- **📏 Distance-aware placement** — units are positioned around the incident by their real `distance_km`; the closer a unit is, the closer it renders.
+- **🛣️ Live routes** — dispatched units draw an animated route line and travel along it toward the scene in real time.
+- **🎯 Auto-framing & click-to-locate** — the camera auto-fits the incident and its responders; click any unit to fly straight to it.
+- **🧭 Dispatch overlay** — a live summary (`FE12 inbound · 4 min · 2.3 km`) plus a status legend keep the tactical picture readable at a glance.
 
 <br/>
 
@@ -277,6 +288,26 @@ When a **Critical** incident arrives and every capable unit is busy, the orchest
 | **State** | TanStack Query | ![TanStack](https://img.shields.io/badge/-TanStack-FF4154?style=flat-square&logo=reactquery&logoColor=white) |
 
 </div>
+
+<br/>
+
+---
+
+## 🎨 Design Language
+
+<div align="center">
+
+**A premium, blacked-out command-center aesthetic — built to feel calm under pressure.**
+
+</div>
+
+| Element | Treatment |
+|:--|:--|
+| 🖤 **Palette** | Deep matte black with a refined **platinum** accent; colour is reserved for meaning |
+| 🚦 **Semantic colour** | Red = Critical · Amber = High · Emerald = Available — the only saturated tones on screen |
+| ✨ **Micro-interactions** | Count-up confidence & ETA, an odometer-style rolling clock, staggered panel entrances |
+| 🌌 **Ambience** | Slow-drifting aurora glow, a living tactical grid, and glassmorphic panels |
+| 🔁 **Reallocation flow** | An animated *transfer* view showing a unit move from its old job to the new critical scene |
 
 <br/>
 
@@ -541,6 +572,8 @@ When no unit is free, `/analyze` returns a `reallocation` block instead of `null
     ✅ Unit dispatch              ⬜ Voice biometrics
     ✅ Live unit tracking         ⬜ Predictive ML
     ✅ Auto-reallocation
+    ✅ Geocoded live routing
+    ✅ Premium black UI
 ```
 
 </div>
