@@ -29,7 +29,7 @@ export function Header() {
   };
 
   return (
-    <header className="relative flex items-center justify-between px-6 py-4 bg-slate-900/40 backdrop-blur-xl border-b border-slate-700/50">
+    <header className="relative flex items-center justify-between px-6 py-4 bg-slate-900/40 backdrop-blur-xl border-b border-slate-700/50 sheen">
       {/* Gradient Line */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
       
@@ -37,8 +37,8 @@ export function Header() {
       <div className="flex items-center gap-5">
         <div className="flex items-center gap-4">
           {/* Logo */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
+          <div className="relative float-slow">
+            <div className="absolute inset-0 bg-cyan-500/30 blur-xl rounded-full animate-pulse" />
             <img src="/logo.png" alt="ResQ Desk" className="relative w-11 h-11 object-contain" />
           </div>
 

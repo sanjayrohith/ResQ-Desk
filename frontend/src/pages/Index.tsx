@@ -86,8 +86,25 @@ const Index = () => {
       {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
+
+        {/* Animated aurora light field */}
+        <div className="aurora-layer">
+          {isCritical ? (
+            <>
+              <div className="aurora-blob aurora-red" />
+              <div className="aurora-blob aurora-purple" />
+            </>
+          ) : (
+            <>
+              <div className="aurora-blob aurora-cyan" />
+              <div className="aurora-blob aurora-purple" />
+              <div className="aurora-blob aurora-emerald" />
+            </>
+          )}
+        </div>
+
         <div className={`absolute inset-0 transition-all duration-1000 ${isCritical ? 'ambient-critical' : 'ambient-glow'}`} />
-        <div className="absolute inset-0 tactical-grid opacity-20" />
+        <div className="absolute inset-0 tactical-grid tactical-grid-animated opacity-20" />
         <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
       </div>
 
@@ -112,7 +129,7 @@ const Index = () => {
       <main className="flex-1 grid grid-cols-12 gap-4 p-4 min-h-0 w-full relative z-10">
         
         {/* LEFT COLUMN - Communications */}
-        <div className="col-span-3 flex flex-col gap-4 h-full min-h-0">
+        <div className="col-span-3 flex flex-col gap-4 h-full min-h-0 panel-entrance delay-1">
           {/* Live Call Panel (Fixed 40% height) */}
           <div className="h-[50%] panel panel-glow relative overflow-hidden">
             <LiveCall onPTTChange={setIsOperatorSpeaking} />
@@ -129,7 +146,7 @@ const Index = () => {
         </div>
 
         {/* MIDDLE COLUMN - Incident Details */}
-        <div className="col-span-4 h-full panel panel-glow relative overflow-hidden">
+        <div className="col-span-4 h-full panel panel-glow relative overflow-hidden panel-entrance delay-2">
           <IncidentDetails 
             key={resetKey} 
             data={incidentData} 
@@ -138,7 +155,7 @@ const Index = () => {
         </div>
 
         {/* RIGHT COLUMN - Map */}
-        <div className={`col-span-5 h-full panel relative overflow-hidden ${isCritical ? 'panel-critical' : 'panel-glow'}`}>
+        <div className={`col-span-5 h-full panel relative overflow-hidden panel-entrance delay-3 ${isCritical ? 'panel-critical edge-glow edge-glow-critical' : 'panel-glow'}`}>
           <MapPanel 
             severity={incidentData.severity || "Normal"} 
             isDataComplete={incidentData.location !== "Awaiting data..."}

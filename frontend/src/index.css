@@ -509,4 +509,178 @@
     background: rgba(14, 165, 233, 0.3);
     border-radius: 2px;
   }
+
+  /* === AURORA BACKGROUND === */
+  .aurora-layer {
+    position: fixed;
+    inset: -25%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(90px);
+    opacity: 0.9;
+  }
+
+  .aurora-blob {
+    position: absolute;
+    width: 48vw;
+    height: 48vw;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    will-change: transform;
+  }
+
+  .aurora-cyan {
+    top: -5%;
+    left: -5%;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.55), transparent 62%);
+    animation: aurora-1 20s ease-in-out infinite;
+  }
+
+  .aurora-purple {
+    top: 10%;
+    right: -10%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.45), transparent 62%);
+    animation: aurora-2 26s ease-in-out infinite;
+  }
+
+  .aurora-emerald {
+    bottom: -15%;
+    left: 20%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4), transparent 62%);
+    animation: aurora-3 32s ease-in-out infinite;
+  }
+
+  .aurora-red {
+    top: 20%;
+    left: 30%;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.5), transparent 60%);
+    animation: aurora-1 14s ease-in-out infinite;
+  }
+
+  @keyframes aurora-1 {
+    0%, 100% { transform: translate(-8%, -6%) scale(1); }
+    33%      { transform: translate(18%, 12%) scale(1.25); }
+    66%      { transform: translate(-4%, 22%) scale(0.9); }
+  }
+  @keyframes aurora-2 {
+    0%, 100% { transform: translate(6%, -4%) scale(1.1); }
+    33%      { transform: translate(-16%, 14%) scale(0.85); }
+    66%      { transform: translate(10%, -12%) scale(1.2); }
+  }
+  @keyframes aurora-3 {
+    0%, 100% { transform: translate(0%, 8%) scale(1); }
+    50%      { transform: translate(14%, -10%) scale(1.3); }
+  }
+
+  /* === ANIMATED TACTICAL GRID === */
+  .tactical-grid-animated {
+    animation: grid-drift 12s linear infinite;
+  }
+
+  @keyframes grid-drift {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 40px 40px, 40px 40px; }
+  }
+
+  /* === PANEL ENTRANCE CHOREOGRAPHY === */
+  .panel-entrance {
+    opacity: 0;
+    animation: panel-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes panel-in {
+    from { opacity: 0; transform: translateY(16px) scale(0.985); filter: blur(4px); }
+    to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.15s; }
+  .delay-3 { animation-delay: 0.25s; }
+
+  /* === ANIMATED GRADIENT EDGE (active panels) === */
+  .edge-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--edge-angle, 0deg),
+      transparent 0%,
+      rgba(14, 165, 233, 0.7) 15%,
+      transparent 35%,
+      transparent 65%,
+      rgba(14, 165, 233, 0.7) 85%,
+      transparent 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: edge-rotate 6s linear infinite;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .edge-glow-critical::after {
+    background: conic-gradient(
+      from var(--edge-angle, 0deg),
+      transparent 0%,
+      rgba(239, 68, 68, 0.85) 15%,
+      transparent 35%,
+      transparent 65%,
+      rgba(239, 68, 68, 0.85) 85%,
+      transparent 100%
+    );
+    animation-duration: 3s;
+  }
+
+  @property --edge-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes edge-rotate {
+    to { --edge-angle: 360deg; }
+  }
+
+  /* === SHEEN SWEEP === */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sheen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      rgba(255, 255, 255, 0.12),
+      transparent
+    );
+    transform: skewX(-20deg);
+    animation: sheen-sweep 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sheen-sweep {
+    0%, 100% { left: -60%; }
+    45%, 55% { left: 130%; }
+  }
+
+  /* === FLOAT (idle drift for accents) === */
+  .float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
 }
