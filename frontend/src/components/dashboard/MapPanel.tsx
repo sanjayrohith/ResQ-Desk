@@ -21,8 +21,8 @@ interface LiveUnit {
   assigned_severity: string | null;
 }
 
-// Fallback center (New York City) used only if geocoding fails.
-const FALLBACK_CENTER: [number, number] = [40.7128, -74.006];
+// Fallback center (Chennai, Tamil Nadu) used only if geocoding fails.
+const FALLBACK_CENTER: [number, number] = [13.0827, 80.2707];
 const TRAVEL_MS = 30000; // visual travel time for an EN_ROUTE unit
 const POLL_MS = 4000;
 const MAX_DISPLAY_KM = 8; // clamp far units so the scene stays framed
