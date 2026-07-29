@@ -29,14 +29,6 @@ steps: it transcribes the caller in real time, uses AI to extract structured inc
 data, and recommends the optimal response unit — reducing the time from call to
 dispatch from tens of seconds to a few seconds.
 
-This repository contains the **frontend** (React tactical dashboard). The AI engine and
-command center live in the companion backend repository.
-
-| Component | Repository | Stack |
-| --------- | ---------- | ----- |
-| Frontend (this repo) | [ResQ-Desk](https://github.com/sanjayrohith/ResQ-Desk) | React, TypeScript, Vite |
-| Backend | [ResQ-Backend](https://github.com/sanjayrohith/ResQ-Backend) | FastAPI, AI/NLP, Python |
-
 ---
 
 ## Features
