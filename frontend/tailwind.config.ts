@@ -13,7 +13,30 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Geist", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        mono: ["Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+      },
+      transitionTimingFunction: {
+        out: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
       colors: {
+        /* ResQ Desk ramp: graphite surfaces, off-white ink, one signal amber.
+           Amber means live or needs attention. Red means critical only. */
+        deep: "#0f0f10",
+        base: "#141415",
+        surface: "#19191b",
+        raised: "#232325",
+        line: "rgba(237, 237, 237, 0.08)",
+        "line-strong": "rgba(237, 237, 237, 0.16)",
+        ink: {
+          DEFAULT: "#ededed",
+          2: "#a1a1a6",
+          3: "#85858b",
+        },
+        signal: "#e8a33d",
+        crit: "#e5484d",
+        ok: "#4cc38a",
         /* === PREMIUM BLACK THEME REMAP ===
            `slate` (was blue-grey) -> warm neutral near-black.
            `cyan`  (was the blue accent) -> refined champagne gold.

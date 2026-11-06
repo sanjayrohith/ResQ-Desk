@@ -23,12 +23,14 @@ export interface IncidentData {
   reallocation?: ReallocationSuggestion | null;
 }
 
+export const AWAITING_LOCATION = "Awaiting data";
+
 const getInitialState = (): IncidentData => ({
-  location: "Awaiting data...",
+  location: AWAITING_LOCATION,
   emergency_type: "Pending",
   severity: "Normal",
   keywords: [],
-  reasoning: "System standby. Waiting for voice input...",
+  reasoning: "System standby. Waiting for voice input",
   confidence_score: 0,
   suggested_unit: ""
 });
@@ -43,7 +45,7 @@ const Index = () => {
   const isCritical = incidentData.severity?.toLowerCase() === "critical";
 
   const resetDashboard = () => {
-    console.log("🛑 DASHBOARD RESET");
+    console.log("Dashboard reset");
     setShowPopup(false);
     setResetKey(prev => prev + 1);
     setIncidentData(getInitialState());
@@ -55,7 +57,7 @@ const Index = () => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || "https://resq-backend-9585.onrender.com";
-      console.log("🚀 Sending audio data to:", `${API_URL}/analyze`);
+      console.log("Sending transcript to:", `${API_URL}/analyze`);
 
       const response = await fetch(`${API_URL}/analyze`, {
         method: "POST",
@@ -66,120 +68,67 @@ const Index = () => {
       if (!response.ok) throw new Error(`Server Error: ${response.status}`);
 
       const backendData = await response.json();
-      console.log("✅ Backend Replied:", backendData);
+      console.log("Backend replied:", backendData);
 
       if (backendData.incident_id) {
         setIncidentData(backendData); 
         setTimeout(() => setShowPopup(true), 4000); 
       }
     } catch (error) {
-      console.error("❌ Sync Error:", error);
+      console.error("Sync error:", error);
     } finally {
       setIsAnalyzing(false); 
     }
   };
 
   return (
-    // FIX 1: h-screen and overflow-hidden prevent the whole page from scrolling
-    <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-950 text-slate-200">
-      
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
-
-        {/* Animated aurora light field */}
-        <div className="aurora-layer">
-          {isCritical ? (
-            <>
-              <div className="aurora-blob aurora-red" />
-              <div className="aurora-blob aurora-purple" />
-            </>
-          ) : (
-            <>
-              <div className="aurora-blob aurora-cyan" />
-              <div className="aurora-blob aurora-purple" />
-              <div className="aurora-blob aurora-emerald" />
-            </>
-          )}
-        </div>
-
-        <div className={`absolute inset-0 transition-all duration-1000 ${isCritical ? 'ambient-critical' : 'ambient-glow'}`} />
-        <div className="absolute inset-0 tactical-grid tactical-grid-animated opacity-20" />
-        <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
-      </div>
-
-      <div className="scanlines z-0" />
-
-      {/* Dispatch Popup */}
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-base text-ink">
+      {/* Dispatch popup */}
       {showPopup && (
-        <DispatchPopup 
-          data={incidentData} 
-          onCancel={resetDashboard}   
-          onComplete={resetDashboard} 
+        <DispatchPopup
+          data={incidentData}
+          onCancel={resetDashboard}
+          onComplete={resetDashboard}
         />
       )}
 
-      {/* Header - Fixed Height */}
-      <div className="relative z-10 shrink-0">
+      <div className="shrink-0">
         <Header />
       </div>
 
-      {/* Main Dashboard - Takes Remaining Height */}
-      {/* FIX 2: min-h-0 is crucial for Grid to respect parent height */}
-      <main className="flex-1 grid grid-cols-12 gap-4 p-4 min-h-0 w-full relative z-10">
-        
-        {/* LEFT COLUMN - Communications */}
-        <div className="col-span-3 flex flex-col gap-4 h-full min-h-0 panel-entrance delay-1">
-          {/* Live Call Panel (Fixed 40% height) */}
-          <div className="h-[50%] panel panel-glow relative overflow-hidden">
+      <main className="grid min-h-0 w-full flex-1 grid-cols-12 gap-4 p-4">
+        {/* Communications */}
+        <div className="panel-entrance delay-1 col-span-3 flex h-full min-h-0 flex-col gap-4">
+          <div className="panel shrink-0">
             <LiveCall onPTTChange={setIsOperatorSpeaking} />
           </div>
-          
-          {/* Live Transcription Panel (Flex Grow fills rest) */}
-          {/* FIX 3: Wrapper needs h-full or flex-1 to pass height down */}
-          <div className="flex-1 panel panel-glow relative overflow-hidden min-h-0">
-            <LiveTranscription 
-              onLineComplete={handleLineComplete} 
-              isMuted={isOperatorSpeaking} 
+
+          <div className="panel min-h-0 flex-1">
+            <LiveTranscription
+              onLineComplete={handleLineComplete}
+              isMuted={isOperatorSpeaking}
             />
           </div>
         </div>
 
-        {/* MIDDLE COLUMN - Incident Details */}
-        <div className="col-span-4 h-full panel panel-glow relative overflow-hidden panel-entrance delay-2">
-          <IncidentDetails 
-            key={resetKey} 
-            data={incidentData} 
-            isLoading={isAnalyzing} 
+        {/* Incident details */}
+        <div className="panel panel-entrance delay-2 col-span-4 h-full">
+          <IncidentDetails
+            key={resetKey}
+            data={incidentData}
+            isLoading={isAnalyzing}
           />
         </div>
 
-        {/* RIGHT COLUMN - Map */}
-        <div className={`col-span-5 h-full panel relative overflow-hidden panel-entrance delay-3 ${isCritical ? 'panel-critical edge-glow edge-glow-critical' : 'panel-glow'}`}>
-          <MapPanel 
-            severity={incidentData.severity || "Normal"} 
-            isDataComplete={incidentData.location !== "Awaiting data..."}
+        {/* Map */}
+        <div className={`panel panel-entrance delay-3 col-span-5 h-full ${isCritical ? "panel-critical" : ""}`}>
+          <MapPanel
+            severity={incidentData.severity || "Normal"}
+            isDataComplete={incidentData.location !== AWAITING_LOCATION}
             location={incidentData.location}
           />
         </div>
       </main>
-      
-      {/* Bottom Status Bar - Fixed Height */}
-      <div className="relative z-10 shrink-0 px-5 py-2 bg-slate-900/50 border-t border-slate-700/30 flex items-center justify-between text-[10px] backdrop-blur-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 live-dot" />
-            <span className="text-slate-400 font-mono tracking-wide">SYSTEM OPERATIONAL</span>
-          </div>
-          <div className="h-3 w-px bg-slate-700" />
-          <span className="text-slate-500 font-mono">WS_LINK: ESTABLISHED</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-slate-500 font-mono">ResQ-Desk v2.0 (HACKATHON BUILD)</span>
-          <div className="h-3 w-px bg-slate-700" />
-          <span className="text-slate-600">© 2024 ResQ Team</span>
-        </div>
-      </div>
     </div>
   );
 };
