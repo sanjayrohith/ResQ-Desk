@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Flame, Map as MapIcon, Truck, Heart, Clock, AlertCircle, Ship, Navigation2, Loader2 } from "lucide-react";
+import { Flame, Truck, Heart, Ship, Navigation2, Loader2 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Circle, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 
@@ -29,18 +29,23 @@ const MAX_DISPLAY_KM = 8; // clamp far units so the scene stays framed
 
 const API_URL = import.meta.env.VITE_API_URL || "https://resq-backend-9585.onrender.com";
 
-const VEHICLE_CONFIG: Record<string, { color: string; icon: typeof Heart; label: string }> = {
-  AMBULANCE: { color: "#c2c2cb", icon: Heart, label: "Ambulance" },
-  FIRE_ENGINE: { color: "#f97316", icon: Flame, label: "Fire Engine" },
-  RESCUE_BOAT: { color: "#a855f7", icon: Ship, label: "Rescue Boat" },
-};
-const DEFAULT_VEHICLE = { color: "#64748b", icon: Truck, label: "Unit" };
+const CRIT = "#e5484d";
+const SIGNAL = "#e8a33d";
+const BASE = "#141415";
 
-const STATUS_CONFIG: Record<string, { color: string; label: string; pulse: boolean }> = {
-  AVAILABLE: { color: "#10b981", label: "Available", pulse: false },
-  EN_ROUTE: { color: "#c2c2cb", label: "En Route", pulse: true },
-  ON_SCENE: { color: "#f59e0b", label: "On Scene", pulse: false },
-  RETURNING: { color: "#64748b", label: "Returning", pulse: false },
+// Vehicle type is told apart by icon. Color is reserved for status.
+const VEHICLE_CONFIG: Record<string, { icon: typeof Heart; label: string }> = {
+  AMBULANCE: { icon: Heart, label: "Ambulance" },
+  FIRE_ENGINE: { icon: Flame, label: "Fire engine" },
+  RESCUE_BOAT: { icon: Ship, label: "Rescue boat" },
+};
+const DEFAULT_VEHICLE = { icon: Truck, label: "Unit" };
+
+const STATUS_CONFIG: Record<string, { color: string; label: string }> = {
+  AVAILABLE: { color: "#4cc38a", label: "Available" },
+  EN_ROUTE: { color: SIGNAL, label: "En route" },
+  ON_SCENE: { color: "#ededed", label: "On scene" },
+  RETURNING: { color: "#85858b", label: "Returning" },
 };
 
 const vehicleCfg = (t: string) => VEHICLE_CONFIG[t] || DEFAULT_VEHICLE;
@@ -65,34 +70,22 @@ function offsetKm(center: [number, number], km: number, bearing: number): [numbe
   return [center[0] + dLat, center[1] + dLng];
 }
 
-function createUnitIcon(statusColor: string, pulse: boolean) {
-  const pulseRing = pulse
-    ? `<div style="position:absolute;width:30px;height:30px;border-radius:50%;background:${statusColor};opacity:0.35;animation:unitPing 1.6s cubic-bezier(0,0,0.2,1) infinite;"></div>`
-    : "";
+function createUnitIcon(statusColor: string) {
   return L.divIcon({
     className: "",
-    html: `<div style="position:relative;display:flex;align-items:center;justify-content:center;width:16px;height:16px;">
-      ${pulseRing}
-      <div style="width:16px;height:16px;border-radius:50%;background:${statusColor};border:2px solid rgba(255,255,255,0.7);box-shadow:0 0 12px ${statusColor}88,0 0 4px ${statusColor}44;position:relative;z-index:1;"></div>
-    </div>
-    <style>@keyframes unitPing{75%,100%{transform:scale(2.2);opacity:0;}}</style>`,
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${statusColor};border:2px solid ${BASE};"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
   });
 }
 
 function createIncidentIcon(isCritical: boolean) {
-  const color = isCritical ? "#ef4444" : "#f59e0b";
+  const color = isCritical ? CRIT : SIGNAL;
   return L.divIcon({
     className: "",
-    html: `<div style="position:relative;display:flex;align-items:center;justify-content:center;">
-      <div style="position:absolute;width:40px;height:40px;border-radius:50%;background:${color};opacity:0.3;animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;"></div>
-      <div style="position:absolute;width:28px;height:28px;border-radius:50%;background:${color};opacity:0.4;animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;animation-delay:0.5s;"></div>
-      <div style="width:18px;height:18px;border-radius:50%;background:${color};border:3px solid rgba(255,255,255,0.7);box-shadow:0 0 20px ${color}aa;position:relative;z-index:1;"></div>
-    </div>
-    <style>@keyframes ping{75%,100%{transform:scale(2);opacity:0;}}</style>`,
-    iconSize: [40, 40],
-    iconAnchor: [20, 20],
+    html: `<div style="width:18px;height:18px;border-radius:50%;background:${color};border:3px solid ${BASE};"></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
   });
 }
 
@@ -147,7 +140,7 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
 
   // 1) Geocode the AI-extracted location so the incident lands at its real place.
   useEffect(() => {
-    if (!isDataComplete || !location || location === "Awaiting data...") {
+    if (!isDataComplete || !location || location === "Awaiting data") {
       setIncidentCenter(null);
       return;
     }
@@ -249,7 +242,7 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
     const icons: Record<string, L.DivIcon> = {};
     units.forEach((u) => {
       const s = statusCfg(u.status);
-      icons[u.unit_id] = createUnitIcon(s.color, s.pulse);
+      icons[u.unit_id] = createUnitIcon(s.color);
     });
     return icons;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -280,29 +273,20 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
   const inbound = units.filter((u) => u.status === "EN_ROUTE");
   const assigned = inbound[0];
 
+  const zoneColor = isCritical ? CRIT : SIGNAL;
+
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* Header */}
+    <div className="flex h-full flex-col overflow-hidden">
       <div className="panel-header">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-cyan-500/20">
-            <MapIcon className="w-4 h-4 text-cyan-400" />
-          </div>
-          <span className="panel-title text-cyan-400">TACTICAL MAP</span>
-        </div>
+        <span className="panel-title">Map</span>
         {isDataComplete && location && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 max-w-[60%]">
-            {geocoding ? (
-              <Loader2 className="w-3 h-3 shrink-0 text-cyan-400 animate-spin" />
-            ) : (
-              <AlertCircle className={`w-3 h-3 shrink-0 ${isCritical ? 'text-red-400' : 'text-amber-400'}`} />
-            )}
-            <span className="text-[10px] text-slate-300 font-medium truncate">{location}</span>
+          <div className="flex max-w-[60%] items-center gap-2 text-sm text-ink-2">
+            {geocoding && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-ink-3" />}
+            <span className="truncate">{location}</span>
           </div>
         )}
       </div>
 
-      {/* Map */}
       <div className="relative flex-1 overflow-hidden">
         <MapContainer
           center={FALLBACK_CENTER}
@@ -310,20 +294,19 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
           className="h-full w-full"
           zoomControl={false}
           attributionControl={false}
-          style={{ background: "#0a0a0a" }}
+          style={{ background: BASE }}
         >
           <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
           <MapController incidentCenter={incidentCenter} bounds={bounds} focus={focusPos} />
 
-          {/* Incident zone (at the geocoded location) */}
+          {/* Incident zone at the geocoded location */}
           {incidentCenter && (
             <>
-              <Circle center={incidentCenter} radius={300} pathOptions={{ color: isCritical ? "#ef4444" : "#f59e0b", fillColor: isCritical ? "#ef4444" : "#f59e0b", fillOpacity: 0.08, weight: 2, opacity: 0.5, dashArray: "8 6" }} />
-              <Circle center={incidentCenter} radius={150} pathOptions={{ color: isCritical ? "#ef4444" : "#f59e0b", fillColor: isCritical ? "#ef4444" : "#f59e0b", fillOpacity: 0.15, weight: 1, opacity: 0.6 }} />
+              <Circle center={incidentCenter} radius={300} pathOptions={{ color: zoneColor, fillColor: zoneColor, fillOpacity: 0.06, weight: 1, opacity: 0.6, dashArray: "6 6" }} />
               <Marker position={incidentCenter} icon={incidentIcon}>
                 <Popup className="tactical-popup">
-                  <div className="text-xs font-bold uppercase">{isCritical ? "🔴 CRITICAL ZONE" : "🟡 INCIDENT ZONE"}</div>
-                  {location && <div className="text-[10px] mt-1 text-slate-400">{location}</div>}
+                  <div className="text-sm font-medium">{isCritical ? "Critical zone" : "Incident zone"}</div>
+                  {location && <div className="text-xs text-ink-3">{location}</div>}
                 </Popup>
               </Marker>
             </>
@@ -336,7 +319,7 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
               <Polyline
                 key={`route-${u.unit_id}`}
                 positions={[unitBase[u.unit_id], incidentCenter]}
-                pathOptions={{ color: statusCfg(u.status).color, weight: 2, opacity: 0.6, dashArray: "6 8" }}
+                pathOptions={{ color: SIGNAL, weight: 2, opacity: 0.7, dashArray: "6 8" }}
               />
             );
           })}
@@ -354,19 +337,18 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
                 eventHandlers={{ click: () => setSelectedUnit(selectedUnit === unit.unit_id ? null : unit.unit_id) }}
               >
                 <Popup className="tactical-popup">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold" style={{ color: vc.color }}>{shortCode(unit.unit_id)}</span>
-                    <span className="text-[10px] text-slate-400">{vc.label}</span>
+                  <div className="mb-1 flex items-center gap-2">
+                    <span className="text-sm font-medium">{shortCode(unit.unit_id)}</span>
+                    <span className="text-xs text-ink-3">{vc.label}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ color: sc.color, backgroundColor: `${sc.color}22` }}>{sc.label}</span>
-                    {unit.assigned_severity && <span className="text-[9px] text-slate-400">on {unit.assigned_severity}</span>}
+                  <div className="mb-1 flex items-center gap-2 text-xs">
+                    <span className="dot" style={{ backgroundColor: sc.color }} />
+                    <span>{sc.label}</span>
+                    {unit.assigned_severity && <span className="text-ink-3">on {unit.assigned_severity.toLowerCase()}</span>}
                   </div>
-                  <div className="flex items-center gap-3 text-[10px]">
-                    {unit.eta_minutes != null && (
-                      <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-slate-400" /><span className="font-bold text-white">{unit.eta_minutes}m</span></span>
-                    )}
-                    {unit.distance_km != null && <span className="text-slate-400">{unit.distance_km} km</span>}
+                  <div className="meta flex items-center gap-3">
+                    {unit.eta_minutes != null && <span className="text-ink">{unit.eta_minutes} min</span>}
+                    {unit.distance_km != null && <span>{unit.distance_km} km</span>}
                   </div>
                 </Popup>
               </Marker>
@@ -374,15 +356,15 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
           })}
         </MapContainer>
 
-        {/* Dispatch summary overlay */}
+        {/* Dispatch summary */}
         {isDataComplete && (
-          <div className="absolute top-3 left-3 z-[500] rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-700/50 px-3 py-2 max-w-[70%]">
+          <div className="absolute left-4 top-4 z-[500] max-w-[70%] rounded-lg border border-line bg-surface px-3 py-2">
             {assigned ? (
-              <div className="flex items-center gap-2">
-                <Navigation2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                <div className="leading-tight">
-                  <div className="text-[11px] font-bold text-white">{shortCode(assigned.unit_id)} inbound</div>
-                  <div className="text-[9px] text-slate-400">
+              <div className="flex items-center gap-3">
+                <Navigation2 className="h-4 w-4 shrink-0 text-signal" />
+                <div>
+                  <div className="text-sm font-medium text-ink">{shortCode(assigned.unit_id)} inbound</div>
+                  <div className="meta">
                     {assigned.eta_minutes != null ? `${assigned.eta_minutes} min` : "en route"}
                     {assigned.distance_km != null ? ` · ${assigned.distance_km} km` : ""}
                     {inbound.length > 1 ? ` · +${inbound.length - 1} more` : ""}
@@ -390,45 +372,36 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                <span className="text-[10px] text-slate-300">Awaiting dispatch confirmation</span>
-              </div>
+              <span className="text-sm text-ink-2">Awaiting dispatch confirmation</span>
             )}
           </div>
         )}
 
         {/* Status legend */}
-        <div className="absolute bottom-3 right-3 z-[500] rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-700/50 px-3 py-2 flex flex-col gap-1">
+        <div className="absolute bottom-4 right-4 z-[500] flex flex-col gap-1 rounded-lg border border-line bg-surface px-3 py-2">
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
             <div key={key} className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cfg.color, boxShadow: `0 0 6px ${cfg.color}` }} />
-              <span className="text-[9px] text-slate-400 uppercase tracking-wider">{cfg.label}</span>
+              <span className="dot" style={{ backgroundColor: cfg.color }} />
+              <span className="text-xs text-ink-2">{cfg.label}</span>
             </div>
           ))}
         </div>
-
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-slate-950/30 via-transparent to-slate-950/50 z-[400]" />
       </div>
 
-      {/* Footer - Unit legend / selector */}
-      <div className="p-4 bg-slate-900/50 border-t border-slate-700/30">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 live-dot" />
-            <span className="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">Live Fleet</span>
-            <span className="text-[10px] text-slate-500">· {availableCount}/{units.length} available</span>
+      {/* Fleet */}
+      <div className="shrink-0 border-t border-line p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-baseline gap-3">
+            <span className="text-sm font-medium text-ink">Fleet</span>
+            <span className="meta">{availableCount}/{units.length} available</span>
           </div>
           {inbound.length > 0 && (
-            <div className="flex items-center gap-2 text-cyan-400">
-              <Navigation2 className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">{inbound.length} inbound</span>
-            </div>
+            <span className="meta text-signal">{inbound.length} inbound</span>
           )}
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {units.length === 0 && <span className="text-[10px] text-slate-600 py-2">Connecting to unit feed…</span>}
+          {units.length === 0 && <span className="py-2 text-sm text-ink-3">Connecting to unit feed</span>}
           {units.map((unit) => {
             const vc = vehicleCfg(unit.vehicle_type);
             const sc = statusCfg(unit.status);
@@ -438,15 +411,16 @@ export function MapPanel({ severity, isDataComplete, location }: MapPanelProps) 
               <button
                 key={unit.unit_id}
                 onClick={() => setSelectedUnit(isSelected ? null : unit.unit_id)}
-                title={`${vc.label} · ${sc.label} — click to locate`}
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all shrink-0 border ${
-                  isSelected ? 'border-current/30' : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600'
+                title={`${vc.label} · ${sc.label}. Click to locate`}
+                className={`flex h-8 shrink-0 items-center gap-2 rounded-lg border px-3 transition-colors duration-150 ${
+                  isSelected
+                    ? "border-line-strong bg-raised text-ink"
+                    : "border-line text-ink-2 hover:border-line-strong hover:text-ink"
                 }`}
-                style={isSelected ? { color: vc.color, backgroundColor: `${vc.color}20` } : { color: "#94a3b8" }}
               >
-                <UnitIcon className="w-3.5 h-3.5" />
-                <span className="text-xs font-semibold">{shortCode(unit.unit_id)}</span>
-                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: sc.color, boxShadow: `0 0 6px ${sc.color}` }} />
+                <UnitIcon className="h-4 w-4 text-ink-3" />
+                <span className="text-sm font-medium">{shortCode(unit.unit_id)}</span>
+                <span className="dot" style={{ backgroundColor: sc.color }} />
               </button>
             );
           })}

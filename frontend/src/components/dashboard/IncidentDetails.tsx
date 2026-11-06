@@ -1,4 +1,3 @@
-import { MapPin, Activity, ShieldAlert, Brain, Target, Sparkles, TrendingUp, Tag, Truck, Repeat } from "lucide-react";
 import { useCountUp } from "@/hooks/useCountUp";
 
 export interface IncidentData {
@@ -22,254 +21,133 @@ interface IncidentDetailsProps {
   isLoading?: boolean;
 }
 
+// Dot and text color per severity. Red is reserved for critical.
+const SEVERITY_STYLE: Record<string, { dot: string; text: string }> = {
+  Critical: { dot: "bg-crit", text: "text-crit" },
+  High: { dot: "bg-signal", text: "text-signal" },
+  Medium: { dot: "bg-ink-2", text: "text-ink" },
+  Low: { dot: "bg-ok", text: "text-ink" },
+  Normal: { dot: "bg-ink-3", text: "text-ink-2" },
+};
+
+const Skeleton = ({ className }: { className: string }) => (
+  <div className={`animate-pulse rounded bg-raised ${className}`} />
+);
+
 export function IncidentDetails({ data, isLoading }: IncidentDetailsProps) {
-  const hasData = !!data.location && data.location !== "Awaiting data...";
+  const hasData = !!data.location && data.location !== "Awaiting data";
 
-  const severityConfig: Record<string, { bg: string; text: string; glow: string; label: string }> = {
-    Critical: { 
-      bg: "bg-gradient-to-r from-red-500/20 to-red-600/10", 
-      text: "text-red-400", 
-      glow: "shadow-red-500/20",
-      label: "CRITICAL"
-    },
-    High: { 
-      bg: "bg-gradient-to-r from-amber-500/20 to-orange-500/10", 
-      text: "text-amber-400", 
-      glow: "shadow-amber-500/20",
-      label: "HIGH"
-    },
-    Medium: { 
-      bg: "bg-gradient-to-r from-yellow-500/20 to-amber-500/10", 
-      text: "text-yellow-400", 
-      glow: "shadow-yellow-500/20",
-      label: "MEDIUM"
-    },
-    Low: { 
-      bg: "bg-gradient-to-r from-emerald-500/20 to-green-500/10", 
-      text: "text-emerald-400", 
-      glow: "shadow-emerald-500/20",
-      label: "LOW"
-    },
-    Normal: { 
-      bg: "bg-slate-800/50", 
-      text: "text-slate-400", 
-      glow: "",
-      label: "NORMAL"
-    },
-  };
-
-  const safeSeverity = data.severity 
-    ? (data.severity.charAt(0).toUpperCase() + data.severity.slice(1).toLowerCase()) 
+  const safeSeverity = data.severity
+    ? data.severity.charAt(0).toUpperCase() + data.severity.slice(1).toLowerCase()
     : "Normal";
-  const severityStyle = severityConfig[safeSeverity] || severityConfig.Normal;
+  const severityStyle = SEVERITY_STYLE[safeSeverity] || SEVERITY_STYLE.Normal;
   const confidencePercent = hasData && data.confidence_score ? Math.round(data.confidence_score * 100) : 0;
   const animatedConfidence = useCountUp(confidencePercent, 1200);
   const displayConfidence = Math.round(animatedConfidence);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      
-      {/* Header */}
+    <div className="flex h-full flex-col overflow-hidden">
       <div className="panel-header">
-        <div className="flex items-center gap-2">
-          <div className={`p-1.5 rounded-lg ${isLoading ? 'bg-cyan-500/20' : hasData ? 'bg-emerald-500/20' : 'bg-slate-700/50'}`}>
-            <Target className={`w-4 h-4 ${isLoading ? 'text-cyan-400 animate-spin' : hasData ? 'text-emerald-400' : 'text-slate-500'}`} />
-          </div>
-          <span className="panel-title text-cyan-400">INCIDENT REPORT</span>
-        </div>
-        <div className={`status-badge ${isLoading ? 'status-live' : hasData ? 'status-online' : 'bg-slate-800/50 text-slate-500 border border-slate-700/50'}`}>
-          {isLoading ? (
-            <>
-              <Sparkles className="w-3 h-3 animate-pulse" />
-              AI ANALYZING
-            </>
-          ) : hasData ? (
-            "DATA COMPLETE"
-          ) : (
-            "AWAITING INPUT"
-          )}
-        </div>
+        <span className="panel-title">Incident report</span>
+        <span className="meta flex items-center gap-2">
+          <span className={`dot ${isLoading ? "bg-signal dot-live" : hasData ? "bg-ok" : "bg-ink-3"}`} />
+          {isLoading ? "Analyzing" : hasData ? "Complete" : "Awaiting input"}
+        </span>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 p-5 space-y-4 overflow-y-auto scrollbar-tactical">
-        
-        {/* Emergency Type & Severity - Side by side */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Emergency Type */}
-          <div className="space-y-2">
-            <label className="data-label">
-              <ShieldAlert className="w-3.5 h-3.5" />
-              Emergency Type
-            </label>
-            <div className={`data-cell h-14 flex items-center ${hasData ? 'data-cell-active' : ''}`}>
-              {isLoading ? (
-                <div className="h-5 w-24 bg-slate-700/50 rounded animate-pulse shimmer" />
-              ) : (
-                <span className={`font-mono text-base font-bold uppercase tracking-tight ${hasData ? 'text-white' : 'text-slate-700'}`}>
-                  {hasData ? data.emergency_type : "—"}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Severity */}
-          <div className="space-y-2">
-            <label className="data-label">
-              <Activity className="w-3.5 h-3.5" />
-              Severity Level
-            </label>
-            <div className="data-cell h-14 flex items-center justify-center">
-              {isLoading ? (
-                <div className="h-7 w-full bg-slate-700/50 rounded-lg animate-pulse shimmer" />
-              ) : hasData ? (
-                <div className={`w-full py-2 rounded-lg text-center font-bold text-xs uppercase tracking-wider border ${severityStyle.bg} ${severityStyle.text} border-current/30 shadow-lg ${severityStyle.glow}`}>
-                  {severityStyle.label}
-                </div>
-              ) : (
-                <span className="text-slate-700 font-mono">—</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Location - Full width */}
-        <div className="space-y-2">
-          <label className="data-label">
-            <MapPin className="w-3.5 h-3.5" />
-            Identified Location
-          </label>
-          <div className={`data-cell flex items-center ${hasData ? 'data-cell-active' : ''}`}>
+      <div className="scrollbar-tactical flex-1 space-y-5 overflow-y-auto p-5">
+        {/* Type and severity */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="well p-4">
+            <div className="label mb-2">Emergency type</div>
             {isLoading ? (
-              <div className="h-5 w-full bg-slate-700/50 rounded animate-pulse shimmer" />
+              <Skeleton className="h-8 w-24" />
             ) : (
-              <span className={`font-mono text-sm ${hasData ? 'text-white' : 'text-slate-700'}`}>
-                {hasData ? data.location : "Waiting for location data..."}
-              </span>
+              <div className={`text-2xl font-medium leading-8 ${hasData ? "text-ink" : "text-ink-3"}`}>
+                {hasData ? data.emergency_type : "—"}
+              </div>
             )}
           </div>
-        </div>
 
-        {/* AI Confidence & Keywords */}
-        <div className="grid grid-cols-12 gap-4">
-          {/* AI Confidence */}
-          <div className="col-span-4 space-y-2">
-            <label className="data-label">
-              <TrendingUp className="w-3.5 h-3.5" />
-              AI Confidence
-            </label>
-            <div className="data-cell flex flex-col items-center justify-center py-5">
-              {isLoading ? (
-                <svg className="w-16 h-16 animate-spin" viewBox="0 0 64 64">
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="currentColor"
-                    strokeWidth="5"
-                    fill="none"
-                    className="text-slate-700"
-                  />
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="currentColor"
-                    strokeWidth="5"
-                    fill="none"
-                    strokeDasharray="44 132"
-                    strokeLinecap="round"
-                    className="text-cyan-500"
-                  />
-                </svg>
-              ) : (
-                <>
-                  {/* Circular Progress */}
-                  <div className="relative w-20 h-20 mb-2">
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
-                      <circle
-                        cx="40"
-                        cy="40"
-                        r="32"
-                        stroke="currentColor"
-                        strokeWidth="6"
-                        fill="none"
-                        className="text-slate-800"
-                      />
-                      <circle
-                        cx="40"
-                        cy="40"
-                        r="32"
-                        stroke="currentColor"
-                        strokeWidth="6"
-                        fill="none"
-                        strokeDasharray={`${(animatedConfidence / 100) * 201.06} 201.06`}
-                        strokeLinecap="round"
-                        className={`transition-all duration-300 ${hasData ? 'text-cyan-400' : 'text-slate-700'}`}
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className={`text-2xl font-bold number-ticker ${hasData ? 'text-cyan-400 text-glow-cyan' : 'text-slate-700'}`}>
-                        {displayConfidence}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider">Percent</span>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Keywords */}
-          <div className="col-span-8 space-y-2">
-            <label className="data-label">
-              <Tag className="w-3.5 h-3.5" />
-              Detected Keywords
-            </label>
-            <div className="data-cell min-h-[120px]">
-              {isLoading ? (
-                <div className="flex flex-wrap gap-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-7 w-16 bg-slate-700/50 rounded-lg animate-pulse shimmer" />
-                  ))}
-                </div>
-              ) : hasData && data.keywords && data.keywords.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {data.keywords.map((k, i) => (
-                    <span key={i} className="keyword-tag">
-                      {k}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center h-full text-slate-600 text-sm">
-                  No keywords detected
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Tactical Reasoning */}
-        <div className="space-y-2">
-          <label className="data-label">
-            <Brain className="w-3.5 h-3.5" />
-            AI Reasoning
-          </label>
-          <div className={`data-cell min-h-[80px] ${hasData ? 'data-cell-active' : ''}`}>
+          <div className="well p-4">
+            <div className="label mb-2">Severity</div>
             {isLoading ? (
-              <div className="space-y-2">
-                <div className="h-4 w-full bg-slate-700/50 rounded animate-pulse shimmer" />
-                <div className="h-4 w-3/4 bg-slate-700/50 rounded animate-pulse shimmer" />
+              <Skeleton className="h-8 w-24" />
+            ) : hasData ? (
+              <div className={`flex items-center gap-2 text-2xl font-medium leading-8 ${severityStyle.text}`}>
+                <span className={`dot h-2 w-2 ${severityStyle.dot}`} />
+                {safeSeverity}
               </div>
             ) : (
-              <p className={`text-sm leading-relaxed italic ${hasData ? 'text-slate-300' : 'text-slate-700'}`}>
-                {hasData ? `"${data.reasoning}"` : "Waiting for AI analysis..."}
-              </p>
+              <div className="text-2xl font-medium leading-8 text-ink-3">—</div>
             )}
           </div>
         </div>
 
+        {/* Location */}
+        <div>
+          <div className="label mb-2">Location</div>
+          {isLoading ? (
+            <Skeleton className="h-5 w-full" />
+          ) : (
+            <div className={`text-base leading-6 ${hasData ? "text-ink" : "text-ink-3"}`}>
+              {hasData ? data.location : "Waiting for location"}
+            </div>
+          )}
+        </div>
+
+        {/* Confidence */}
+        <div>
+          <div className="mb-2 flex items-baseline justify-between">
+            <span className="label">Confidence</span>
+            <span className={`figure text-sm ${hasData ? "text-ink" : "text-ink-3"}`}>
+              {isLoading ? "—" : `${displayConfidence}%`}
+            </span>
+          </div>
+          <div className="h-1 overflow-hidden rounded-full bg-raised">
+            <div
+              className="h-full rounded-full bg-ink"
+              style={{ width: isLoading ? "0%" : `${animatedConfidence}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Keywords */}
+        <div>
+          <div className="label mb-2">Keywords</div>
+          {isLoading ? (
+            <div className="flex flex-wrap gap-2">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-6 w-16" />
+              ))}
+            </div>
+          ) : hasData && data.keywords && data.keywords.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {data.keywords.map((k, i) => (
+                <span key={i} className="keyword-tag">
+                  {k.toLowerCase()}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-ink-3">No keywords detected</div>
+          )}
+        </div>
+
+        {/* Reasoning */}
+        <div>
+          <div className="label mb-2">Reasoning</div>
+          {isLoading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+            </div>
+          ) : (
+            <p className={`text-sm leading-6 ${hasData ? "text-ink-2" : "text-ink-3"}`}>
+              {hasData ? data.reasoning : "Waiting for analysis"}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
